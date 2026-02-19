@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ashish Dictionary</title>
+    <!-- 
+        NOTE ON CDN USAGE: 
+        We use the Tailwind CDN here for simplicity, as we cannot run a local build process (like PostCSS or CLI) 
+        in this single-file environment. For actual production, you must install Tailwind as per official documentation. 
+    -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        /* Define a root variable for the primary color palette */
+        :root {
+            /* Default Theme: Indigo */
+            --color-primary-600: 79, 70, 229; /* indigo-600 */
+            --color-primary-700: 67, 56, 202; /* indigo-700 */
+            --color-primary-100: 224, 231, 255; /* indigo-100 */
+            --color-primary-200: 199, 210, 254; /* indigo-200 */
+        }
+        
+        /* Custom font and basic styling */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+        
+        /* Custom styling that uses CSS variables for theme switching */
+        .word-list-tag {
+            display: inline-block;
+            background-color: rgb(var(--color-primary-100));
+            color: rgb(var(--color-primary-600));
+            padding: 8px 12px;
+            border-radius: 9999px; 
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 150ms ease-in-out;
+            white-space: nowrap; 
+        }
+        .word-list-tag:hover {
+            background-color: rgb(var(--color-primary-200));
+        }
+        .text-theme-primary {
+            color: rgb(var(--color-primary-600));
+        }
+        .bg-theme-primary {
+            background-color: rgb(var(--color-primary-600));
+        }
+        .bg-theme-primary:hover {
+            background-color: rgb(var(--color-primary-700));
+        }
+        .border-theme-primary {
+            border-color: rgb(var(--color-primary-600));
+        }
+        .border-theme-secondary {
+            border-color: rgb(var(--color-primary-200));
+        }
+        .ring-theme-focus:focus-within {
+             /* Use !important to override the default Tailwind focus ring on form elements */
+            --tw-ring-color: rgba(var(--color-primary-200)) !important; 
+        }
+
+        /* Styling for horizontal history/bookmark scroll */
+        .custom-scroll {
+            overflow-x: auto;
+            white-space: nowrap;
+            padding-bottom: 8px; /* Space for scrollbar */
+        }
+        .custom-scroll::-webkit-scrollbar {
+            height: 6px;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background-color: rgb(var(--color-primary-200)); /* Use lighter theme color */
+            border-radius: 3px;
+        }
+
+        /* Style for control buttons in the top right */
+        .control-button {
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
+            padding-top: 0.5rem;
+            padding-bottom: 0.5rem;
+            font-size: 0.875rem;
+            line-height: 1.25rem;
+            font-weight: 600;
+            border-radius: 0.5rem;
+            color: #374151;
+            background-color: #ffffff;
+            transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow, transform, filter, -webkit-backdrop-filter;
+            transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
+            transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter, -webkit-backdrop-filter;
+            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+            transition-duration: 150ms;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            border-width: 1px;
+            border-color: #e5e7eb;
+            position: relative;
+        }
+        .control-button:hover {
+            background-color: #f3f4f6;
+        }
+    </style>
+</head>
+<body class="min-h-screen p-4 sm:p-8 flex flex-col items-center">
+
+    <!-- Main Container -->
+    <div id="app-container" class="w-full max-w-4xl">
+        
+        <!-- Theme Control (Moved up for better visibility) -->
+        <div class="flex justify-end mb-4">
+             <div class="relative">
+                <button id="random-word-button" class="control-button mr-2">
+                    <i data-lucide="shuffle" class="w-4 h-4 inline mr-1"></i> Random
+                </button>
+                <button id="theme-button" class="control-button">
+                    <i data-lucide="palette" class="w-4 h-4 inline mr-1"></i> Theme
+                </button>
+                <!-- Dropdown Content for Themes -->
+                <div id="theme-dropdown" class="absolute right-0 mt-2 w-36 bg-white rounded-xl shadow-2xl py-2 z-10 hidden border border-gray-100">
+                    <a href="#" class="theme-option block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-theme="indigo">Default (Indigo)</a>
+                    <a href="#" class="theme-option block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-theme="blue">Classic (Blue)</a>
+                    <a href="#" class="theme-option block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-theme="emerald">Ocean (Emerald)</a>
+                    <a href="#" class="theme-option block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-theme="rose">Sunset (Rose)</a>
+                    <a href="#" class="theme-option block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-theme="sepia">Sepia</a>
+                    <a href="#" class="theme-option block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-theme="slate">Slate</a>
+                    <a href="#" class="theme-option block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-theme="amber">Amber</a>
+                    <a href="#" class="theme-option block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-theme="lime">Lime</a>
+                </div>
+            </div>
+        </div>
+
+        <header class="text-center mb-10">
+            <h1 class="text-4xl font-extrabold text-gray-800 tracking-tight mb-2">
+                <i data-lucide="library" class="inline-block w-8 h-8 mr-2 text-theme-primary"></i>
+                Ashish Dictionary
+            </h1>
+            <p class="text-gray-500">A powerful, fast, and feature-rich English word lookup tool.</p>
+
+
+        </header>
+
+        <!-- Word of the Day -->
+        <div id="word-of-the-day-container" class="hidden mb-8 p-6 bg-gradient-to-r from-blue-50 to-indigo-100 rounded-2xl shadow-lg border border-gray-200 relative">
+            <button id="close-word-of-the-day" class="absolute top-3 right-4 text-gray-400 hover:text-gray-600 transition">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+            <h3 class="text-lg font-bold text-gray-500 mb-2 tracking-widest uppercase">
+                Word of the Day
+            </h3>
+            <div id="word-of-the-day-content">
+                <!-- Content will be injected here -->
+            </div>
+        </div>
+
+        <!-- Search Input and Button -->
+        <div class="flex space-x-4 mb-8 relative ring-theme-focus">
+            
+            <!-- Language Dropdown -->
+            <div class="relative">
+                <select id="language-select" class="p-3 border-2 border-theme-secondary rounded-xl shadow-md focus:ring-4 focus:border-theme-primary transition duration-200 text-lg appearance-none bg-white pr-8">
+                    <option value="en">English</option>
+                </select>
+                <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none"></i>
+            </div>
+            
+            <!-- Search Input -->
+            <input type="text" id="word-input" list="autocomplete-words" placeholder="Type an English word..." 
+                   class="flex-grow p-3 border-2 border-theme-secondary rounded-xl shadow-md focus:ring-4 focus:border-theme-primary transition duration-200 text-lg">
+            
+            <!-- Autocomplete Datalist -->
+            <datalist id="autocomplete-words"></datalist>
+
+            <!-- Search Button -->
+            <button id="search-button" 
+                    class="p-3 bg-theme-primary text-white font-semibold rounded-xl shadow-lg hover:bg-theme-primary transition duration-150 transform hover:scale-[1.02] disabled:opacity-50 flex items-center justify-center min-w-[100px]">
+                <i data-lucide="search" class="w-5 h-5 mr-2"></i>
+                Search
+            </button>
+        </div>
+
+        <!-- Tabs for History and Bookmarks -->
+        <div class="flex space-x-4 mb-0">
+            <button id="tab-history" class="tab-button px-4 py-2 text-sm font-semibold rounded-t-lg bg-white text-theme-primary border-b-2 border-theme-primary shadow-inner" data-target="history-panel">
+                <i data-lucide="history" class="w-4 h-4 mr-1 inline"></i> Search History
+            </button>
+            <button id="tab-bookmarks" class="tab-button px-4 py-2 text-sm font-semibold rounded-t-lg text-gray-500 bg-gray-200 hover:bg-white transition" data-target="bookmarks-panel">
+                <i data-lucide="bookmark" class="w-4 h-4 mr-1 inline"></i> Bookmarks
+            </button>
+        </div>
+
+        <!-- History and Bookmarks Panels -->
+        <div id="history-panel" class="tab-panel bg-white p-4 rounded-b-xl rounded-tr-xl shadow-lg border border-gray-100 mb-8 custom-scroll space-x-3 flex">
+            <p class="text-gray-500 italic text-sm">Loading history...</p>
+        </div>
+        <div id="bookmarks-panel" class="tab-panel hidden bg-white p-4 rounded-b-xl rounded-tr-xl shadow-lg border border-gray-100 mb-8 flex flex-wrap gap-2">
+            <p class="text-gray-500 italic text-sm">Loading bookmarks...</p>
+        </div>
+
+
+        <!-- Loading Indicator / Message Box -->
+        <div id="status-message" class="hidden p-4 rounded-xl bg-yellow-100 border border-yellow-300 text-yellow-800 mb-6 font-medium">
+            <!-- Dynamic messages like 'Loading...' or 'Error: Word not found' will go here -->
+        </div>
+
+        <!-- Results Display Area -->
+        <div id="results-container" class="bg-white p-6 sm:p-8 rounded-2xl shadow-2xl border border-gray-100 hidden">
+            <!-- Definition results and the Export button will be injected here -->
+        </div>
+    </div>
+
+    <!-- JavaScript Logic -->
+    <script type="module">
+        // Helper function to initialize Lucide icons
+        lucide.createIcons();
+        
+        // Suppress the console warning about CDN usage in this specific environment
+        console.warn = (message, ...optionalParams) => {
+            if (typeof message === 'string' && message.includes('cdn.tailwindcss.com')) {
+                return; 
+            }
+            console.error(message, ...optionalParams);
+        };
+
+
+        // --- CONSTANTS & LOCAL STORAGE KEYS ---
+        const HISTORY_KEY = 'ashishDictHistory';
+        const BOOKMARKS_KEY = 'ashishDictBookmarks';
+        const WOD_KEY_DATE = 'ashishDictWODDate';
+        const WOD_KEY_DATA = 'ashishDictWODData';
+        const MAX_HISTORY_ITEMS = 15;
+        const LANG_KEY = 'ashishDictLang';
+
+        // Language and API Configurations
+        const API_CONFIGS = {
+            'en': { name: 'English', host: 'https://api.dictionaryapi.dev/api/v2/entries/en/' },
+            'pa': { name: 'Punjabi', host: 'https://api.dictionaryapi.dev/api/v2/entries/pa/' }, // Placeholder, assuming same API structure
+            'hi': { name: 'Hindi', host: 'https://api.dictionaryapi.dev/api/v2/entries/hi/' },
+            'el': { name: 'Greek', host: 'https://api.dictionaryapi.dev/api/v2/entries/el/' }, // Placeholder
+            'he': { name: 'Hebrew', host: 'https://api.dictionaryapi.dev/api/v2/entries/he/' }, // Placeholder
+        };
+        let currentLang = localStorage.getItem(LANG_KEY) || 'en';
+        
+        // Theme Definitions (RGB values for a consistent palette)
+        const THEMES = {
+            'indigo': { primary: '79, 70, 229', primary_700: '67, 56, 202', light: '224, 231, 255', lighter: '199, 210, 254' },
+            'blue': { primary: '59, 130, 246', primary_700: '37, 99, 235', light: '219, 234, 254', lighter: '191, 219, 254' },
+            'emerald': { primary: '16, 185, 129', primary_700: '5, 150, 105', light: '209, 250, 229', lighter: '167, 243, 208' },
+            'rose': { primary: '244, 63, 94', primary_700: '225, 29, 72', light: '255, 237, 243', lighter: '253, 213, 220' },
+            'sepia': { primary: '112, 66, 20', primary_700: '87, 51, 15', light: '245, 222, 179', lighter: '255, 235, 205' },
+            'slate': { primary: '100, 116, 139', primary_700: '71, 85, 105', light: '226, 232, 240', lighter: '203, 213, 225' },
+            'amber': { primary: '245, 158, 11', primary_700: '217, 119, 6', light: '254, 243, 199', lighter: '253, 230, 138' },
+            'lime': { primary: '132, 204, 22', primary_700: '101, 163, 13', light: '236, 252, 203', lighter: '217, 249, 157' },
+        };
+        const THEME_KEY = 'ashishDictTheme';
+        let currentTheme = localStorage.getItem(THEME_KEY) || 'indigo';
+
+
+        // Word lists for different languages for Random Word and Word of the Day features
+        const LANGUAGE_WORD_LISTS = {
+            'en': [
+            ],
+            'pa': ['ਸੇਬ', 'ਕੇਲਾ', 'ਕੰਪਿਊਟਰ', 'ਸ਼ਬਦਕੋਸ਼', 'ਬੁਲਾਰਾ', 'ਛਿਣਭੰਗਰ', 'ਕੀ-ਬੋਰਡ', 'ਮਿੱਠਾ', 'ਯਾਦ', 'ਵਿਰੋਧਾਭਾਸ'], // Punjabi
+            'hi': ['सेब', 'केला', 'कंप्यूटर', 'शब्दकोश', 'वाक्पटुता', 'अल्पकालिक', 'कुंजीपटल', 'मधुर', 'उदासीनता', 'विरोधाभास'], // Hindi
+            'el': ['μήλο', 'μπανάνα', 'υπολογιστής', 'λεξικό', 'ευγλωττία', 'εφήμερος', 'πληκτρολόγιο', 'μελίρρυτος', 'νοσταλγία', 'παράδοξο'], // Greek
+            'he': ['תפוח', 'בננה', 'מחשב', 'מילון', 'כושר ביטוי', 'ארעי', 'מקלדת', 'עָרֵב', 'נוסטלגיה', 'פרדוקס'] // Hebrew
+        };
+
+        // --- DOM Elements & State ---
+        const languageSelect = document.getElementById('language-select');
+        const wordInput = document.getElementById('word-input');
+        const searchButton = document.getElementById('search-button');
+        const resultsContainer = document.getElementById('results-container');
+        const statusMessage = document.getElementById('status-message');
+        const historyPanel = document.getElementById('history-panel');
+        const bookmarksPanel = document.getElementById('bookmarks-panel');
+        const autocompleteList = document.getElementById('autocomplete-words');
+        
+        const themeButton = document.getElementById('theme-button');
+        const themeDropdown = document.getElementById('theme-dropdown');
+        
+        let currentBookmarks = new Set();
+        let currentWordData = null; // Stores the structured data of the currently displayed word
+
+        // --- LOCAL STORAGE HELPERS ---
+
+        function loadData(key, defaultValue = []) {
+            try {
+                const data = localStorage.getItem(key);
+                return data ? JSON.parse(data) : defaultValue;
+            } catch (e) {
+                console.error(`Error loading data for key ${key}:`, e);
+                return defaultValue;
+            }
+        }
+
+        function saveData(key, data) {
+            try {
+                localStorage.setItem(key, JSON.stringify(data));
+            } catch (e) {
+                console.error(`Error saving data for key ${key}:`, e);
+            }
+        }
+
+        // --- LANGUAGE HELPERS ---
+
+        function setLanguage(langCode) {
+            if (!API_CONFIGS[langCode]) return;
+            currentLang = langCode;
+            localStorage.setItem(LANG_KEY, langCode);
+            languageSelect.value = langCode;
+            wordInput.placeholder = `Type a ${API_CONFIGS[langCode].name} word...`;
+            displayStatus(`Ready to search in ${API_CONFIGS[langCode].name}.`, 'loading');
+            resultsContainer.classList.add('hidden'); // Clear results on lang change
+            setupAutocomplete(); // Refresh autocomplete options for the new language
+        }
+
+        // --- CORE FUNCTIONALITY: HISTORY AND BOOKMARKS ---
+
+        function updateHistory(word, langCode = currentLang) {
+            const normalizedItem = { word: word, lang: langCode, timestamp: new Date().getTime() };
+            let history = loadData(HISTORY_KEY);
+            
+            history = history.filter(item => item.word !== normalizedItem.word);
+            
+            history.unshift(normalizedItem);
+            if (history.length > MAX_HISTORY_ITEMS) {
+                history = history.slice(0, MAX_HISTORY_ITEMS);
+            }
+            
+            saveData(HISTORY_KEY, history);
+            renderHistory();
+        }
+
+        function renderHistory() {
+            let history = loadData(HISTORY_KEY);
+            if (history.length === 0) {
+                historyPanel.innerHTML = '<p class="text-gray-500 italic text-sm">No search history yet. Start searching words!</p>';
+                return;
+            }
+            
+            history.sort((a, b) => b.timestamp - a.timestamp);
+            
+            const historyHtml = history.map(item => 
+                `<span class="word-list-tag" onclick="document.getElementById('word-input').value='${item.word}'; fetchWord();">
+                    ${item.word}
+                </span>`
+            ).join('');
+
+            historyPanel.innerHTML = historyHtml;
+        }
+
+        function toggleBookmark(word, langCode = DEFAULT_LANG_CODE) {
+            if (!currentWordData) return;
+
+            let bookmarksList = loadData(BOOKMARKS_KEY);
+            const bookmarkId = `${word}-${langCode}`;
+
+            if (currentBookmarks.has(bookmarkId)) {
+                bookmarksList = bookmarksList.filter(item => item.word !== word || item.lang !== langCode);
+            } else {
+                bookmarksList.push({ 
+                    word: word, 
+                    lang: langCode,
+                    // Clone the data to save the state at the time of bookmarking
+                    data: JSON.parse(JSON.stringify(currentWordData))
+                });
+            }
+
+            saveData(BOOKMARKS_KEY, bookmarksList);
+            currentBookmarks = new Set(bookmarksList.map(item => `${item.word}-${item.lang}`));
+            renderBookmarks();
+            updateBookmarkButton(word, langCode);
+        }
+
+        function renderBookmarks() {
+            const bookmarksList = loadData(BOOKMARKS_KEY);
+            currentBookmarks = new Set(bookmarksList.map(item => `${item.word}-${item.lang}`));
+            
+            if (bookmarksList.length === 0) {
+                bookmarksPanel.innerHTML = '<p class="text-gray-500 italic text-sm">No bookmarks yet. Search a word and click the bookmark button when a definition is found.</p>';
+                return;
+            }
+
+            const bookmarksHtml = bookmarksList.map(item => 
+                `<span class="word-list-tag bg-pink-100 text-pink-700 hover:bg-pink-200" 
+                       onclick="document.getElementById('word-input').value='${item.word}'; fetchWord(item.word, item.data, item.lang);">
+                    ${item.word}
+                </span>`
+            ).join('');
+
+            bookmarksPanel.innerHTML = bookmarksHtml;
+        }
+        
+        // --- UI HELPERS ---
+
+        function updateBookmarkButton(word, langCode = DEFAULT_LANG_CODE) {
+            const bookmarkButton = document.getElementById('bookmark-toggle-button');
+            if (!bookmarkButton) return;
+            
+            const bookmarkId = `${word}-${langCode}`;
+            const isBookmarked = currentBookmarks.has(bookmarkId);
+
+            if (!currentWordData) {
+                 bookmarkButton.innerHTML = `<i data-lucide="info" class="w-6 h-6 mr-2"></i> Find a word first`;
+                 bookmarkButton.className = "p-3 text-white font-semibold rounded-xl shadow-md transition duration-150 transform hover:scale-[1.05] whitespace-nowrap bg-gray-400 cursor-not-allowed disabled:opacity-50";
+                 bookmarkButton.disabled = true;
+                 return;
+            }
+
+            bookmarkButton.disabled = false;
+            if (isBookmarked) {
+                bookmarkButton.innerHTML = `<i data-lucide="bookmark-check" class="w-6 h-6 mr-2"></i> Bookmarked`;
+                bookmarkButton.className = "p-3 text-white font-semibold rounded-xl shadow-md transition duration-150 transform hover:scale-[1.05] whitespace-nowrap bg-gray-500 hover:bg-gray-600";
+            } else {
+                bookmarkButton.innerHTML = `<i data-lucide="bookmark" class="w-6 h-6 mr-2"></i> Bookmark Word`;
+                bookmarkButton.className = "p-3 text-white font-semibold rounded-xl shadow-md transition duration-150 transform hover:scale-[1.05] whitespace-nowrap bg-theme-primary hover:bg-theme-primary";
+            }
+            lucide.createIcons();
+        }
+
+        function displayStatus(message, type = 'loading') {
+            statusMessage.textContent = message;
+            statusMessage.classList.remove('hidden', 'bg-red-100', 'text-red-800', 'border-red-300', 'bg-yellow-100', 'text-yellow-800', 'border-yellow-300');
+            
+            switch (type) {
+                case 'error':
+                    statusMessage.classList.add('bg-red-100', 'text-red-800', 'border-red-300');
+                    break;
+                case 'loading':
+                    statusMessage.classList.add('bg-yellow-100', 'text-yellow-800', 'border-yellow-300');
+                    break;
+                default:
+                    statusMessage.classList.add('hidden'); 
+            }
+        }
+        
+        function renderRelatedWords(list, label) {
+            if (!list || list.length === 0) return '';
+            const uniqueList = Array.from(new Set(list)).slice(0, 5); 
+
+            const words = uniqueList.map(word => 
+                `<span class="bg-theme-secondary text-theme-primary px-3 py-1 rounded-full text-sm font-medium cursor-pointer transition hover:bg-theme-lighter active:scale-95" 
+                       onclick="document.getElementById('word-input').value='${word}'; fetchWord();">
+                    ${word}
+                </span>`
+            ).join('');
+
+            return `
+                <div class="mt-3">
+                    <h4 class="text-sm font-semibold text-gray-500 mb-2">${label} (${list.length} total, showing ${uniqueList.length}):</h4>
+                    <div class="flex flex-wrap gap-2">${words}</div>
+                </div>
+            `;
+        }
+        
+        function renderMeaning(meaning) {
+            const partOfSpeech = meaning.partOfSpeech;
+            
+            const definitionsHtml = meaning.definitions.map((def, index) => {
+                const definition = def.definition;
+                const example = def.example ? `<p class="italic text-gray-600 mt-1 pl-2 border-l-2 border-theme-secondary">“${def.example}”</p>` : '';
+                
+                return `
+                    <li class="mb-4 text-gray-700">
+                        <span class="font-medium text-gray-800">${index + 1}.</span> ${definition}
+                        ${example}
+                    </li>
+                `;
+            }).join('');
+
+            const synonyms = meaning.synonyms || [];
+            const antonyms = meaning.antonyms || [];
+
+            return `
+                <div class="border-t border-gray-200 pt-4 mt-6">
+                    <h3 class="text-xl font-bold text-theme-primary capitalize mb-3">
+                        ${partOfSpeech}
+                    </h3>
+                    <ol class="list-disc ml-6 space-y-3">
+                        ${definitionsHtml}
+                    </ol>
+                    ${synonyms.length > 0 ? renderRelatedWords(synonyms, 'Synonyms') : ''}
+                    ${antonyms.length > 0 ? renderRelatedWords(antonyms, 'Antonyms') : ''}
+                </div>
+            `;
+        }
+
+        function renderResults(data, langCode = DEFAULT_LANG_CODE) {
+            if (!data || data.length === 0) {
+                displayStatus('Definition data is empty.', 'error');
+                return;
+            }
+            
+            const wordData = data[0];
+            const word = wordData.word;
+            currentWordData = data;
+
+            const phoneticText = wordData.phonetic || wordData.phonetics.find(p => p.text)?.text || '';
+            const audioUrl = wordData.phonetics.find(p => p.audio)?.audio;
+
+            // --- EXPORT DROPDOWN FOR THE CURRENT WORD ---
+            const exportDropdownHtml = `
+                <div class="relative inline-block text-left">
+                    <button id="export-result-button" class="control-button ml-3 bg-gray-50 hover:bg-gray-100">
+                        <i data-lucide="download" class="w-4 h-4 inline mr-1"></i> Export
+                    </button>
+                    <div id="export-result-dropdown" class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-2xl py-2 z-10 hidden border border-gray-100">
+                        <a href="#" class="export-result-option block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-format="txt">
+                            <i data-lucide="file-text" class="w-4 h-4 mr-2 inline text-gray-500"></i> Export as Text (.txt)
+                        </a>
+                        <a href="#" class="export-result-option block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-format="csv">
+                            <i data-lucide="table" class="w-4 h-4 mr-2 inline text-gray-500"></i> Export as CSV
+                        </a>
+                    </div>
+                </div>
+            `;
+            // --- END EXPORT DROPDOWN ---
+
+            // Header (Word, Phonetics, Bookmark Button, and Export Button)
+            let headerHtml = `
+                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 border-b pb-4">
+                    <div>
+                        <h2 class="text-5xl font-extrabold text-gray-900">${word}</h2>
+                        ${phoneticText ? `<p class="text-theme-primary text-2xl mt-1">${phoneticText}</p>` : ''}
+                    </div>
+                    <div class="mt-4 sm:mt-0 flex space-x-3 items-center">
+                        ${audioUrl ? `
+                            <audio id="pronunciation-audio" src="${audioUrl}"></audio>
+                            <button onclick="document.getElementById('pronunciation-audio').play()" class="p-3 bg-theme-primary text-white font-semibold rounded-xl shadow-lg hover:bg-theme-primary transition duration-150 transform hover:scale-[1.02] flex items-center justify-center">
+                                <i data-lucide="volume-2" class="w-5 h-5"></i>
+                            </button>
+                        ` : ''}
+                        <button id="bookmark-toggle-button" 
+                                class="p-3 text-white font-semibold rounded-xl shadow-md transition duration-150 transform hover:scale-[1.05] whitespace-nowrap"
+                                onclick="toggleBookmark('${word}', '${langCode}')">
+                        </button>
+                        ${exportDropdownHtml}
+                    </div>
+                </div>
+            `;
+
+            const meaningsHtml = wordData.meanings.map(renderMeaning).join('');
+
+            resultsContainer.innerHTML = headerHtml + meaningsHtml;
+            resultsContainer.classList.remove('hidden');
+            displayStatus('', 'success');
+            
+            updateBookmarkButton(word, langCode);
+            updateHistory(word, langCode);
+            lucide.createIcons();
+            
+            // Re-attach Export button listeners after content update
+            setupExportListeners();
+        }
+
+        // --- FETCH LOGIC ---
+
+        async function fetchWord(wordToSearch = null, preloadedData = null, preloadedLang = currentLang) {
+            const word = wordToSearch || wordInput.value.trim();
+            resultsContainer.classList.add('hidden');
+            currentWordData = null;
+
+            if (!word) {
+                displayStatus('Please enter a word to search.', 'error');
+                wordInput.focus();
+                return;
+            }
+
+            if (preloadedData) {
+                setLanguage(preloadedLang); // Ensure UI matches the preloaded data's language
+                renderResults(preloadedData, preloadedLang);
+                wordInput.value = word;
+                return;
+            }
+
+            const langConfig = API_CONFIGS[currentLang];
+            const encodedWord = encodeURIComponent(word);
+            const apiUrl = `${langConfig.host}${encodedWord}`;
+            
+            displayStatus(`Searching for "${word}" in ${langConfig.name}...`);
+            searchButton.disabled = true;
+
+            try {
+                const response = await fetch(apiUrl);
+
+                if (!response.ok) {
+                    const langName = langConfig.name;
+                    if (response.status === 404) {
+                        displayStatus(`Sorry, the ${langName} word "${word}" was not found.`, 'error');
+                    } else {
+                        let data = {};
+                        try { data = await response.json(); } catch (e) { /* ignored */ }
+                        const message = data.message || `Could not retrieve definitions for "${word}" due to an API error.`;
+                        displayStatus(message, 'error');
+                    }
+                    return;
+                }
+
+                const data = await response.json();
+                renderResults(data, currentLang);
+
+            } catch (error) {
+                console.error("Fetch Error:", error);
+                displayStatus('A network error occurred. Please check your connection.', 'error');
+            } finally {
+                searchButton.disabled = false;
+            }
+        }
+
+        // --- THEME LOGIC ---
+
+        function applyTheme(themeName) {
+            const theme = THEMES[themeName];
+            if (!theme) return;
+
+            document.documentElement.style.setProperty('--color-primary-600', theme.primary);
+            document.documentElement.style.setProperty('--color-primary-700', theme.primary_700);
+            document.documentElement.style.setProperty('--color-primary-100', theme.light);
+            document.documentElement.style.setProperty('--color-primary-200', theme.lighter);
+
+            localStorage.setItem(THEME_KEY, themeName);
+            currentTheme = themeName;
+            
+            renderHistory();
+            renderBookmarks();
+            lucide.createIcons();
+
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                // Ensure only the active tab gets the theme color border
+                if (btn.classList.contains('border-b-2')) {
+                    // This relies on the current tab having the dynamic class 'text-theme-primary' applied by setupTabs
+                    btn.classList.add('border-theme-primary');
+                }
+            });
+        }
+        
+        // --- EXPORT LOGIC for CURRENT DEFINITION ---
+
+        /** Generates the content for export based on the current search result. */
+        function generateCurrentExportContent(format) {
+            if (!currentWordData) {
+                 return { content: 'Error: No word data available to export.', mime: 'text/plain' };
+            }
+
+            const item = currentWordData[0];
+            let content = '';
+            let mime = 'text/plain';
+
+            switch (format) {
+                case 'txt':
+                    content = `WORD: ${item.word.toUpperCase()}\n\n`;
+                    content += item.meanings.map(m => {
+                        const definitions = m.definitions.map((d, i) => 
+                            `${i + 1}. ${d.definition}\n   ${d.example ? 'Example: ' + d.example + '\n' : ''}`
+                        ).join('');
+                        return `--- Part of Speech: ${m.partOfSpeech.toUpperCase()} ---\n${definitions}\n`;
+                    }).join('');
+                    mime = 'text/plain';
+                    break;
+
+                case 'csv':
+                    const headers = 'Word,Part of Speech,Definition,Example\n';
+                    const rows = item.meanings.flatMap(m => 
+                        m.definitions.map(d => {
+                            const def = d.definition.replace(/"/g, '""'); // Escape quotes
+                            const example = (d.example || '').replace(/"/g, '""');
+                            return `"${item.word}","${m.partOfSpeech}","${def}","${example}"`;
+                        })
+                    ).join('\n');
+                    content = headers + rows;
+                    mime = 'text/csv';
+                    break;
+                
+                case 'pdf-simulated':
+                    content = "--- PDF (SIMULATED TEXT FILE) ---\n\n" + 
+                              `WORD: ${item.word.toUpperCase()}\n----------------------\n` + 
+                               item.meanings.map(m => 
+                                   `\nPart of Speech: ${m.partOfSpeech}\n` + 
+                                   m.definitions.map((d, i) => ` ${i+1}. ${d.definition}\n   Example: ${d.example || 'N/A'}`).join('\n')
+                               ).join('');
+                    mime = 'text/plain';
+                    break;
+            }
+
+            return { content, mime };
+        }
+
+        /** Triggers a file download. */
+        function downloadFile(content, mimeType, filename) {
+            const blob = new Blob([content], { type: mimeType });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function handleExportCurrent(event) {
+            event.preventDefault();
+            const format = event.target.closest('.export-result-option').getAttribute('data-format');
+            if (!format) return;
+
+            const { content, mime } = generateCurrentExportContent(format);
+            const word = currentWordData[0].word.replace(/\s/g, '_');
+            const filename = `${word}_Definition_${new Date().toISOString().slice(0, 10)}.${format.split('-')[0]}`;
+            
+            if (content.includes('Error:')) {
+                displayStatus(content, 'error');
+            } else {
+                downloadFile(content, mime, filename);
+                displayStatus(`Successfully exported definition as ${format.toUpperCase()}.`, 'loading');
+            }
+            
+            // Hide dropdown after action
+            document.getElementById('export-result-dropdown').classList.add('hidden');
+        }
+
+        function toggleDropdown(button, dropdown) {
+            // Close other dropdowns
+            if (button.id !== 'theme-button') {
+                const exportResultDropdown = document.getElementById('export-result-dropdown');
+                if (exportResultDropdown) exportResultDropdown.classList.add('hidden');
+            }
+            
+            if (button.id !== 'export-result-button') {
+                const themeDropdown = document.getElementById('theme-dropdown');
+                if (themeDropdown) themeDropdown.classList.add('hidden');
+            }
+            
+            dropdown.classList.toggle('hidden');
+        }
+
+        // --- INITIALIZATION AND EVENT LISTENERS ---
+
+        function setupExportListeners() {
+            const exportButton = document.getElementById('export-result-button');
+            const exportDropdown = document.getElementById('export-result-dropdown');
+            
+            if (exportButton && exportDropdown) {
+                 exportButton.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    toggleDropdown(exportButton, exportDropdown);
+                });
+                document.querySelectorAll('.export-result-option').forEach(option => {
+                    option.addEventListener('click', handleExportCurrent);
+                });
+            }
+        }
+        
+        function setupAutocomplete() {
+            // Clear existing options
+            autocompleteList.innerHTML = '';
+            // Use the word list for the currently selected language
+            const wordList = LANGUAGE_WORD_LISTS[currentLang] || LANGUAGE_WORD_LISTS['en'];
+            wordList.forEach(word => {
+                const option = document.createElement('option');
+                option.value = word;
+                autocompleteList.appendChild(option);
+            });
+        }
+        
+        function setupTabs() {
+            const tabButtons = document.querySelectorAll('.tab-button');
+            const tabPanels = document.querySelectorAll('.tab-panel');
+
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const targetId = button.getAttribute('data-target');
+
+                    tabButtons.forEach(btn => {
+                        btn.classList.remove('bg-white', 'text-theme-primary', 'border-b-2', 'border-theme-primary', 'shadow-inner');
+                        btn.classList.add('text-gray-500', 'bg-gray-200', 'hover:bg-white');
+                    });
+                    tabPanels.forEach(panel => panel.classList.add('hidden'));
+
+                    // Apply dynamic theme classes to the active tab
+                    button.classList.add('bg-white', 'text-theme-primary', 'border-b-2', 'border-theme-primary', 'shadow-inner');
+                    button.classList.remove('text-gray-500', 'bg-gray-200', 'hover:bg-white');
+                    document.getElementById(targetId).classList.remove('hidden');
+                });
+            });
+        }
+
+        // Theme control event listeners (global listener is for closing both)
+        themeButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            toggleDropdown(themeButton, themeDropdown);
+        });
+        document.querySelectorAll('.theme-option').forEach(option => {
+            option.addEventListener('click', (e) => {
+                e.preventDefault();
+                const newTheme = e.target.getAttribute('data-theme');
+                applyTheme(newTheme);
+                themeDropdown.classList.add('hidden');
+            });
+        });
+        
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', (e) => {
+            if (themeDropdown && !themeButton.contains(e.target) && !themeDropdown.contains(e.target)) {
+                themeDropdown.classList.add('hidden');
+            }
+            const exportButton = document.getElementById('export-result-button');
+            const exportDropdown = document.getElementById('export-result-dropdown');
+             if (exportButton && exportDropdown && !exportButton.contains(e.target) && !exportDropdown.contains(e.target)) {
+                exportDropdown.classList.add('hidden');
+            }
+        });
+
+
+        async function fetchWordOfTheDay() {
+            const today = new Date().toISOString().slice(0, 10);
+            const wodDateKey = `${WOD_KEY_DATE}_${currentLang}`;
+            const wodDataKey = `${WOD_KEY_DATA}_${currentLang}`;
+            const lastFetchedDate = localStorage.getItem(wodDateKey);
+
+            if (lastFetchedDate === today) {
+                const wodData = loadData(wodDataKey);
+                if (wodData) {
+                    renderWordOfTheDay(wodData);
+                    return;
+                }
+            }
+            
+            const wordList = LANGUAGE_WORD_LISTS[currentLang] || LANGUAGE_WORD_LISTS['en'];
+            const randomWord = wordList[Math.floor(Math.random() * wordList.length)];
+            const langConfig = API_CONFIGS[currentLang];
+            
+            const response = await fetch(`${langConfig.host}${randomWord}`);
+            if (response.ok) {
+                const data = await response.json();
+                saveData(wodDataKey, data);
+                localStorage.setItem(wodDateKey, today);
+                renderWordOfTheDay(data);
+            }
+        }
+
+        function renderWordOfTheDay(data) {
+            const container = document.getElementById('word-of-the-day-container');
+            const contentDiv = document.getElementById('word-of-the-day-content');
+            const closeButton = document.getElementById('close-word-of-the-day');
+            
+            if (!data) {
+                container.classList.add('hidden');
+                return;
+            }
+
+            const wordData = data[0];
+            const phoneticText = wordData.phonetic || wordData.phonetics.find(p => p.text)?.text || '';
+            
+            contentDiv.innerHTML = `
+                <h4 class="text-3xl font-bold text-theme-primary mb-1">${wordData.word}</h4>
+                <p class="text-gray-600 mb-3">${phoneticText}</p>
+                <p class="text-gray-700">${wordData.meanings[0].definitions[0].definition}</p>
+                <button onclick="document.getElementById('word-input').value='${wordData.word}'; fetchWord();" class="mt-4 text-sm font-semibold text-theme-primary hover:underline">View full definition &rarr;</button>
+            `;
+            container.classList.remove('hidden');
+            
+            closeButton.addEventListener('click', () => {
+                container.classList.add('hidden');
+            });
+        }
+        
+        window.onload = () => {
+            applyTheme(currentTheme);
+            setupTabs();
+            setupAutocomplete();
+            setLanguage(currentLang); // Initialize language state
+            fetchWordOfTheDay();
+            
+            renderHistory();
+            renderBookmarks();
+            
+            wordInput.focus();
+
+            // --- Event Listeners ---
+            searchButton.addEventListener('click', () => fetchWord());
+            wordInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    fetchWord();
+                }
+            });
+
+            languageSelect.addEventListener('change', (e) => {
+                setLanguage(e.target.value);
+                fetchWordOfTheDay(); // Fetch WOD for the new language
+            });
+        };
+        function fetchRandomWord() {
+            const wordList = LANGUAGE_WORD_LISTS[currentLang] || LANGUAGE_WORD_LISTS['en'];
+            const randomWord = wordList[Math.floor(Math.random() * wordList.length)];
+            wordInput.value = randomWord;
+            fetchWord();
+        }
+        
+        document.getElementById('random-word-button').addEventListener('click', fetchRandomWord);
+
+        // Expose functions to the global scope
+        window.fetchWord = fetchWord;
+        window.toggleBookmark = toggleBookmark;
+    </script>
+
+
+
+</body>
+</html>

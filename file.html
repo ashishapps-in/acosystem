@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AcoShare | P2P File Transfer</title>
+    <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+
+    <style>
+        /* --- Reset & Base Variables --- */
+        :root {
+            --primary: #6366f1; /* Indigo */
+            --primary-hover: #4f46e5;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --success: #10b981;
+            --error: #ef4444;
+            --radius: 12px;
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --font-main: system-ui, -apple-system, sans-serif;
+            --font-mono: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.5;
+            padding: 20px;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* --- Layout --- */
+        .app-container {
+            max-width: 1000px;
+            width: 100%;
+            margin: 0 auto;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* --- Header --- */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--card-bg);
+            padding: 16px 24px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+        }
+
+        .brand {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .brand h1 { font-size: 1.5rem; font-weight: 800; color: var(--primary); letter-spacing: -0.5px; }
+        .brand span { font-size: 0.85rem; color: var(--text-muted); }
+
+        .status-pill {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            background: #f1f5f9;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; background: #cbd5e1; }
+        
+        .status-pill.connected { background: #dcfce7; color: #166534; }
+        .status-pill.connected .status-dot { background: var(--success); }
+        .status-pill.disconnected { background: #fee2e2; color: #991b1b; }
+        .status-pill.disconnected .status-dot { background: var(--error); }
+
+        /* --- Grid --- */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            gap: 20px;
+            flex: 1;
+            min-height: 0; 
+        }
+
+        @media (max-width: 768px) {
+            .main-grid { grid-template-columns: 1fr; overflow-y: auto; }
+            body { padding: 10px; height: auto; }
+        }
+
+        /* --- Cards --- */
+        .card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            border: 1px solid var(--border);
+        }
+
+        .card-header h2 { font-size: 1.1rem; font-weight: 700; margin-bottom: 8px; }
+        .card-header p { font-size: 0.9rem; color: var(--text-muted); }
+
+        /* --- Connection Components --- */
+        .code-display {
+            background: #f8fafc;
+            border: 2px dashed var(--border);
+            border-radius: 8px;
+            padding: 16px;
+            text-align: center;
+        }
+        .code-display label { display: block; font-size: 0.8rem; font-weight: 600; color: var(--text-muted); margin-bottom: 4px; }
+        .code-value {
+            font-family: var(--font-mono);
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+            letter-spacing: 2px;
+        }
+        
+        .input-group { display: flex; gap: 10px; margin-top: 10px; }
+        input[type="text"], input[type="number"] {
+            flex: 1;
+            padding: 10px 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: var(--font-mono);
+            outline: none;
+            transition: border 0.2s;
+        }
+        input:focus { border-color: var(--primary); }
+
+        button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            font-size: 0.95rem;
+        }
+        button:hover { background: var(--primary-hover); }
+        button:disabled { background: #cbd5e1; cursor: not-allowed; }
+        button.outline { background: transparent; border: 1px solid var(--border); color: var(--text-main); }
+        button.outline:hover { background: #f1f5f9; }
+
+        /* --- File & Chat Area --- */
+        .file-section {
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .file-input-wrapper { display: flex; gap: 10px; align-items: center; margin-bottom: 10px; }
+        input[type="file"] { flex: 1; font-size: 0.9rem; }
+
+        /* Progress Bars */
+        .progress-container { margin-top: 10px; display: none; }
+        .progress-container.active { display: block; }
+        
+        .progress-labels { display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 4px; }
+        progress {
+            width: 100%;
+            height: 10px;
+            border-radius: 5px;
+            appearance: none;
+        }
+        progress::-webkit-progress-bar { background-color: #e2e8f0; border-radius: 5px; }
+        progress::-webkit-progress-value { background-color: var(--primary); border-radius: 5px; }
+        progress.receiving::-webkit-progress-value { background-color: var(--success); }
+
+        .download-box {
+            margin-top: 10px;
+            padding: 10px;
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-radius: 8px;
+            text-align: center;
+            display: none;
+        }
+        .download-box a { color: #166534; font-weight: 600; text-decoration: none; }
+        .download-box a:hover { text-decoration: underline; }
+
+        /* Chat Log */
+        .chat-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 200px;
+            gap: 10px;
+        }
+        .chat-log {
+            flex: 1;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 12px;
+            background: #fafafa;
+            overflow-y: auto;
+            font-size: 0.9rem;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .msg { padding: 6px 10px; border-radius: 8px; max-width: 80%; word-break: break-word; }
+        .msg.sys { align-self: center; background: #f1f5f9; color: var(--text-muted); font-size: 0.8rem; font-style: italic; }
+        .msg.me { align-self: flex-end; background: var(--primary); color: white; }
+        .msg.them { align-self: flex-start; background: white; border: 1px solid var(--border); color: var(--text-main); }
+
+        .chat-input-area { display: flex; gap: 10px; }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <header>
+        <div class="brand">
+            <h1>AcoShare</h1>
+            <span>Secure P2P Browser Transfer</span>
+        </div>
+        <div id="connectionStatus" class="status-pill disconnected">
+            <div class="status-dot"></div>
+            <span id="statusText">Disconnected</span>
+        </div>
+    </header>
+
+    <div class="main-grid">
+        <div class="card">
+            <div class="card-header">
+                <h2>Connection Setup</h2>
+                <p>Step 1: Open this page on two devices.</p>
+            </div>
+
+            <div class="code-display">
+                <label>YOUR PEER CODE</label>
+                <div id="myIdDisplay" class="code-value">...</div>
+                <button class="outline" style="margin-top: 8px; font-size: 0.8rem; padding: 4px 8px;" onclick="copyId()">Copy Code</button>
+            </div>
+
+            <div style="margin-top: 10px;">
+                <label style="font-size: 0.9rem; font-weight: 600;">Partner Code</label>
+                <div class="input-group">
+                    <input type="number" id="partnerIdInput" placeholder="e.g. 123" />
+                    <button id="connectBtn" onclick="connectToPeer()">Connect</button>
+                </div>
+                <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 8px;">
+                    Step 2: Enter the code from the other device here and click Connect.
+                </p>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="file-section">
+                <div class="card-header">
+                    <h2>File Transfer</h2>
+                </div>
+                
+                <div class="file-input-wrapper">
+                    <input type="file" id="fileInput" />
+                    <button id="sendFileBtn" onclick="startFileSend()" disabled>Send File</button>
+                </div>
+
+                <div id="sendProgress" class="progress-container">
+                    <div class="progress-labels">
+                        <span>Sending: <span id="sendFileName">file.txt</span></span>
+                        <span id="sendPercent">0%</span>
+                    </div>
+                    <progress id="sendProgressBar" value="0" max="100"></progress>
+                </div>
+
+                <div id="receiveProgress" class="progress-container">
+                    <div class="progress-labels">
+                        <span>Receiving: <span id="receiveFileName">...</span></span>
+                        <span id="receivePercent">0%</span>
+                    </div>
+                    <progress id="receiveProgressBar" class="receiving" value="0" max="100"></progress>
+                </div>
+
+                <div id="downloadBox" class="download-box">
+                    <a id="downloadLink" href="#" download>Download File</a>
+                </div>
+            </div>
+
+            <div class="chat-container">
+                <div class="card-header">
+                    <h2>Chat & Log</h2>
+                </div>
+                <div id="chatLog" class="chat-log">
+                    <div class="msg sys">Initializing application...</div>
+                </div>
+                <div class="chat-input-area">
+                    <input type="text" id="chatInput" placeholder="Type a message..." onkeypress="handleChatKey(event)" />
+                    <button id="sendChatBtn" onclick="sendChat()" disabled>Send</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    /**
+     * AcoShare Logic
+     * NOTE: Logic wrapped in DOMContentLoaded listener for robustness.
+     */
+
+    // --- State Variables ---
+    let peer = null;
+    let conn = null;
+    let myId = null;
+
+    // File Transfer State (Sender)
+    const CHUNK_SIZE = 16 * 1024; // 16KB chunks
+
+    // File Transfer State (Receiver)
+    let receivedChunks = [];
+    let receivedSize = 0;
+    let totalSize = 0;
+    let incomingFileInfo = null; 
+
+    // --- DOM Elements ---
+    let dom = {}; 
+
+    function initializeDomElements() {
+        dom = {
+            statusPill: document.getElementById('connectionStatus'),
+            statusText: document.getElementById('statusText'),
+            myId: document.getElementById('myIdDisplay'),
+            partnerInput: document.getElementById('partnerIdInput'),
+            connectBtn: document.getElementById('connectBtn'),
+            fileInput: document.getElementById('fileInput'),
+            sendBtn: document.getElementById('sendFileBtn'),
+            chatLog: document.getElementById('chatLog'),
+            chatInput: document.getElementById('chatInput'),
+            chatBtn: document.getElementById('sendChatBtn'),
+            // Progress UI
+            sendProg: document.getElementById('sendProgress'),
+            sendBar: document.getElementById('sendProgressBar'),
+            sendName: document.getElementById('sendFileName'),
+            sendPerc: document.getElementById('sendPercent'),
+            recvProg: document.getElementById('receiveProgress'),
+            recvBar: document.getElementById('receiveProgressBar'),
+            recvName: document.getElementById('receiveFileName'),
+            recvPerc: document.getElementById('receivePercent'),
+            dlBox: document.getElementById('downloadBox'),
+            dlLink: document.getElementById('downloadLink')
+        };
+        // Add listeners only after elements are initialized
+        dom.fileInput.addEventListener('change', updateSendButtonState);
+    }
+
+    // --- 1. Initialization & ID Generation ---
+
+    function generateShortId() {
+        return Math.floor(Math.random() * 900) + 100; // 100 to 999
+    }
+
+    function initPeer(retryCount = 0) {
+        if (retryCount > 10) {
+            logSystem("Could not find a free 3-digit code. Please reload.");
+            return;
+        }
+
+        const idAttempt = generateShortId();
+        
+        peer = new Peer(idAttempt.toString(), {
+            debug: 1 // Enable debug logging for PeerJS
+        });
+
+        peer.on('open', (id) => {
+            myId = id;
+            dom.myId.textContent = myId;
+            logSystem(`✅ Ready! Your Peer Code is ${myId}. Share it.`);
+        });
+
+        peer.on('connection', (connection) => {
+            if (conn && conn.open) {
+                connection.close();
+                return;
+            }
+            logSystem(`Incoming connection request from ${connection.peer}.`);
+            setupConnection(connection);
+        });
+
+        peer.on('error', (err) => {
+            if (err.type === 'unavailable-id') {
+                console.log(`ID ${idAttempt} taken, retrying...`);
+                peer.destroy();
+                initPeer(retryCount + 1);
+            } else {
+                logSystem(`🚨 Error: ${err.type}`);
+                console.error("PeerJS Error:", err);
+            }
+        });
+
+        peer.on('disconnected', () => {
+            updateStatus(false, "Reconnecting...");
+            peer.reconnect();
+        });
+    }
+
+    // --- Execution Start ---
+    document.addEventListener('DOMContentLoaded', () => {
+        initializeDomElements();
+        initPeer();
+    });
+
+
+    // --- 2. Connection Handling ---
+
+    function connectToPeer() {
+        // Defensive check to resolve previous TypeError
+        if (!dom.partnerInput) {
+            console.error("Critical Error: Partner ID input element is missing.");
+            logSystem("Connection failed: DOM initialization error.");
+            return; 
+        }
+        
+        const partnerId = dom.partnerInput.value.trim(); 
+
+        if (!partnerId) {
+            alert("Please enter a Partner Code.");
+            return;
+        }
+        if (partnerId === myId) {
+            alert("You cannot connect to yourself.");
+            return;
+        }
+
+        logSystem(`Connecting to ${partnerId}...`);
+        updateStatus(false, "Connecting...");
+        
+        const connection = peer.connect(partnerId);
+        setupConnection(connection);
+    }
+
+    function setupConnection(connection) {
+        conn = connection;
+
+        conn.on('open', () => {
+            updateStatus(true);
+            logSystem(`🔗 Connected to peer ${conn.peer}!`);
+        });
+
+        conn.on('data', (data) => {
+            handleIncomingData(data);
+        });
+
+        conn.on('close', () => {
+            updateStatus(false);
+            logSystem("❌ Connection closed.");
+            dom.sendProg.classList.remove('active');
+            dom.recvProg.classList.remove('active');
+        });
+
+        conn.on('error', (err) => {
+            console.error("Connection Error:", err);
+            logSystem("🚨 Connection Error.");
+        });
+    }
+
+    function updateSendButtonState() {
+        // Only enable if connected AND a file is selected
+        dom.sendBtn.disabled = !(conn && conn.open && dom.fileInput.files.length > 0);
+    }
+
+    function updateStatus(isConnected, textOverride) {
+        if (isConnected) {
+            dom.statusPill.className = "status-pill connected";
+            dom.statusText.textContent = textOverride || "Connected";
+            dom.chatBtn.disabled = false;
+            dom.connectBtn.disabled = true; 
+            dom.partnerInput.disabled = true;
+        } else {
+            dom.statusPill.className = "status-pill disconnected";
+            dom.statusText.textContent = textOverride || "Disconnected";
+            dom.chatBtn.disabled = true;
+            dom.connectBtn.disabled = false;
+            dom.partnerInput.disabled = false;
+        }
+        updateSendButtonState();
+    }
+    
+    // --- 3. Data Protocol & Routing ---
+
+    function handleIncomingData(data) {
+        // 1. Binary Data (File Chunk)
+        if (data instanceof ArrayBuffer) {
+            handleFileChunk(data);
+            return;
+        }
+
+        // 2. JSON/Object Data (Control/Chat)
+        if (typeof data === 'object' && data !== null && data.kind) {
+            switch (data.kind) {
+                case 'chat':
+                    appendChat(data.text, 'them');
+                    break;
+                case 'meta':
+                    console.log(`[RECEIVER] Starting file reception: ${data.name}`);
+                    startFileReceive(data);
+                    break;
+                case 'done':
+                    console.log("[RECEIVER] End of file marker received.");
+                    finishFileReceive();
+                    break;
+                default:
+                    console.warn("[RECEIVER] Unknown control message kind received", data);
+            }
+        } else {
+            console.warn(`[RECEIVER] Received data of unexpected type: ${typeof data}`, data);
+        }
+    }
+
+    // --- 4. File Transfer Logic (Sender) ---
+
+    async function startFileSend() {
+        const file = dom.fileInput.files[0];
+        if (!file || !conn || !conn.open) return;
+
+        // Reset UI
+        dom.sendBtn.disabled = true;
+        dom.sendProg.classList.add('active');
+        dom.sendName.textContent = file.name;
+        
+        // 1. Send Meta
+        console.log(`[SENDER] Sending meta for: ${file.name}`);
+        conn.send({
+            kind: 'meta',
+            name: file.name,
+            size: file.size,
+            type: file.type
+        });
+
+        // 2. Send Chunks
+        let offset = 0;
+        
+        while (offset < file.size) {
+            if (!conn || !conn.open) {
+                logSystem("Sending failed: Connection lost.");
+                dom.sendProg.classList.remove('active');
+                return;
+            }
+            
+            const chunk = file.slice(offset, offset + CHUNK_SIZE);
+            const buffer = await chunk.arrayBuffer();
+            
+            conn.send(buffer);
+            
+            offset += buffer.byteLength;
+            
+            // Update Progress
+            const percent = Math.floor((offset / file.size) * 100);
+            dom.sendBar.value = percent;
+            dom.sendPerc.textContent = percent + "%";
+
+            // Small delay to yield to the UI thread and allow WebRTC buffer management
+            await new Promise(r => setTimeout(r, 1));
+        }
+
+        // 3. Send Done
+        console.log("[SENDER] Sending done marker.");
+        conn.send({ kind: 'done' });
+        logSystem(`✅ Sent file: ${file.name}`);
+        
+        updateSendButtonState();
+        
+        setTimeout(() => dom.sendProg.classList.remove('active'), 3000);
+    }
+
+    // --- 5. File Transfer Logic (Receiver) ---
+
+    function startFileReceive(meta) {
+        incomingFileInfo = meta;
+        receivedChunks = [];
+        receivedSize = 0;
+        totalSize = meta.size;
+
+        dom.recvProg.classList.add('active');
+        dom.recvName.textContent = meta.name;
+        dom.recvBar.value = 0;
+        dom.recvPerc.textContent = "0%";
+        dom.dlBox.style.display = "none";
+        
+        logSystem(`📥 Receiving file: ${meta.name} (${formatBytes(meta.size)})...`);
+    }
+
+    function handleFileChunk(buffer) {
+        if (!incomingFileInfo) {
+            console.warn("[RECEIVER] Ignoring binary chunk: Metadata not yet received.");
+            return; 
+        }
+
+        receivedChunks.push(buffer);
+        receivedSize += buffer.byteLength;
+
+        const percent = Math.floor((receivedSize / totalSize) * 100);
+        dom.recvBar.value = percent;
+        dom.recvPerc.textContent = percent + "%";
+    }
+
+    function finishFileReceive() {
+        if (!incomingFileInfo) {
+            logSystem("Transfer finished, but no file metadata was recorded.");
+            return;
+        }
+
+        console.log(`[RECEIVER] Total bytes received: ${receivedSize}`);
+        const blob = new Blob(receivedChunks, { type: incomingFileInfo.type });
+        const url = URL.createObjectURL(blob);
+
+        dom.dlLink.href = url;
+        dom.dlLink.download = incomingFileInfo.name;
+        dom.dlBox.style.display = "block";
+
+        logSystem(`🎉 File received: ${incomingFileInfo.name}. Click download link.`);
+        
+        // Reset state
+        incomingFileInfo = null;
+        receivedChunks = [];
+        dom.recvProg.classList.remove('active');
+    }
+
+    // --- 6. Chat Logic ---
+
+    function sendChat() {
+        const text = dom.chatInput.value.trim();
+        if (!text || !conn || !conn.open) return;
+
+        conn.send({ kind: 'chat', text: text });
+        appendChat(text, 'me');
+        dom.chatInput.value = "";
+    }
+
+    function handleChatKey(e) {
+        if (e.key === 'Enter') sendChat();
+    }
+
+    function appendChat(text, type) {
+        const div = document.createElement('div');
+        div.className = `msg ${type}`;
+        div.textContent = text;
+        dom.chatLog.appendChild(div);
+        scrollToBottom();
+    }
+
+    function logSystem(text) {
+        const div = document.createElement('div');
+        div.className = 'msg sys';
+        div.innerText = text;
+        dom.chatLog.appendChild(div);
+        scrollToBottom();
+    }
+
+    function scrollToBottom() {
+        dom.chatLog.scrollTop = dom.chatLog.scrollHeight;
+    }
+
+    // --- Utilities ---
+
+    function copyId() {
+        navigator.clipboard.writeText(myId).then(() => {
+            const btn = document.querySelector('.code-display button');
+            const originalText = btn.textContent;
+            btn.textContent = "Copied!";
+            setTimeout(() => btn.textContent = originalText, 2000);
+        });
+    }
+
+    function formatBytes(bytes, decimals = 2) {
+        if (!+bytes) return '0 Bytes';
+        const k = 1024;
+        const dm = decimals < 0 ? 0 : decimals;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
+    }
+
+</script>
+</body>
+</html>

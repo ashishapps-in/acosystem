@@ -1,0 +1,1545 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CalcTech</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="background-glow"></div>
+
+    <main class="calculator-container">
+        <div class="calculator glass-panel">
+            <div class="top-bar">
+                <div class="brand-small">CalcTech</div>
+                <div class="top-icons">
+                    <button class="icon-btn" id="history-btn" title="View History">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="12 6 12 12 16 14"></polyline>
+                        </svg>
+                    </button>
+                    <button class="icon-btn" id="theme-btn" title="Theme Editor">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path
+                                d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z">
+                            </path>
+                        </svg>
+                    </button>
+                    <button class="icon-btn" id="settings-btn" title="Settings">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="3"></circle>
+                            <path
+                                d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
+                            </path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <div class="display-area">
+                <div class="previous-operand" id="previous-operand"></div>
+                <div class="current-operand" id="current-operand">0</div>
+            </div>
+
+            <div class="keypad">
+                <button class="btn btn-function" data-action="clear">AC</button>
+                <button class="btn btn-function" data-action="sign">+/-</button>
+                <button class="btn btn-function" data-action="percent">%</button>
+                <button class="btn btn-operator" data-action="divide">÷</button>
+
+                <button class="btn btn-number" data-number="7">7</button>
+                <button class="btn btn-number" data-number="8">8</button>
+                <button class="btn btn-number" data-number="9">9</button>
+                <button class="btn btn-operator" data-action="multiply">×</button>
+
+                <button class="btn btn-number" data-number="4">4</button>
+                <button class="btn btn-number" data-number="5">5</button>
+                <button class="btn btn-number" data-number="6">6</button>
+                <button class="btn btn-operator" data-action="subtract">−</button>
+
+                <button class="btn btn-number" data-number="1">1</button>
+                <button class="btn btn-number" data-number="2">2</button>
+                <button class="btn btn-number" data-number="3">3</button>
+                <button class="btn btn-operator" data-action="add">+</button>
+
+                <button class="btn btn-number btn-zero" data-number="0">0</button>
+                <button class="btn btn-number" data-number=".">.</button>
+                <button class="btn btn-equal" data-action="calculate">=</button>
+            </div>
+        </div>
+        <div class="brand" id="brand-link">CalcTech</div>
+    </main>
+
+    <!-- History Panel -->
+    <div class="sidebar" id="history-sidebar">
+        <div class="sidebar-header">
+            <h3>History</h3>
+            <button class="close-sidebar">&times;</button>
+        </div>
+        <div class="history-list" id="history-list">
+            <!-- Items injected via JS -->
+        </div>
+        <button class="btn-reset" id="clear-history">Clear History</button>
+    </div>
+
+    <!-- Modals -->
+    <div class="modal-overlay" id="modal-overlay"></div>
+
+    <!-- Theme Editor Modal -->
+    <div class="modal large-modal" id="theme-modal">
+        <div class="modal-header">
+            <h2>Ultimate Theme Editor</h2>
+            <button class="close-modal">&times;</button>
+        </div>
+        <div class="modal-content scrollable-content">
+            <div class="section-title">Presets</div>
+            <div class="preset-grid">
+                <button class="preset-btn" data-theme="modern">Modern</button>
+                <button class="preset-btn" data-theme="nooo">Not Working</button>
+                <button class="preset-btn" data-theme="dark">Dark</button>
+                <button class="preset-btn" data-theme="amoled">Amoled</button>
+                <button class="preset-btn" data-theme="retro">Retro</button>
+                <button class="preset-btn" data-theme="classic">Classic</button>
+                <button class="preset-btn" data-theme="volcano">Volcano</button>
+                <button class="preset-btn" data-theme="forest">Forest</button>
+                <button class="preset-btn" data-theme="desert">Desert</button>
+            </div>
+
+            <div class="section-title">Shape & Elevation</div>
+            <div class="control-group" title="Change the shape of the calculator buttons">
+                <label>Button Shape</label>
+                <select id="btn-shape-select">
+                    <option value="50%">Circle</option>
+                    <option value="8px">Rounded</option>
+                    <option value="0px">Square</option>
+                    <option value="20px">Squircle</option>
+                </select>
+            </div>
+            <div class="control-group" title="Adjust the depth and shadow intensity">
+                <label>Elevation</label>
+                <select id="elevation-select">
+                    <option value="flat">Flat</option>
+                    <option value="2d">2D Soft</option>
+                    <option value="3d">3D Deep</option>
+                </select>
+            </div>
+            <div class="control-group" title="Adjust the corner rounding of the main container">
+                <label>Body Radius</label>
+                <input type="range" id="border-radius" min="0" max="50" value="40">
+            </div>
+
+            <div class="section-title">Typography & Background</div>
+            <div class="control-group">
+                <label>Font</label>
+                <select id="font-select">
+                    <option value="Inter">Inter (Default)</option>
+                    <option value="Roboto">Roboto</option>
+                    <option value="monospace">Monospace</option>
+                    <option value="'Courier New'">Retro</option>
+                </select>
+            </div>
+            <div class="control-group" title="Upload a custom background image">
+                <label>Custom BG Image</label>
+                <input type="file" id="bg-image-upload" accept="image/*">
+            </div>
+
+            <div class="section-title">Manual Colors</div>
+            <div class="control-group">
+                <label>Background 1</label>
+                <input type="color" id="blob-color-1" value="#4f46e5">
+            </div>
+            <div class="control-group">
+                <label>Background 2</label>
+                <input type="color" id="blob-color-2" value="#ec4899">
+            </div>
+            <div class="control-group">
+                <label>Screen Text</label>
+                <input type="color" id="text-primary" value="#ffffff">
+            </div>
+            <div class="control-group">
+                <label>Secondary Text</label>
+                <input type="color" id="text-secondary" value="#ffffff">
+            </div>
+            <div class="control-group">
+                <label>Operator Color</label>
+                <input type="color" id="operator-bg" value="#ff9f0a">
+            </div>
+            <div class="control-group">
+                <label>Blur Intensity</label>
+                <input type="range" id="blur-intensity" min="0" max="50" value="20">
+            </div>
+            <button class="btn-reset" id="reset-theme">Reset to Default</button>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div class="modal" id="settings-modal">
+        <div class="modal-header">
+            <h2>Settings</h2>
+            <button class="close-modal">&times;</button>
+        </div>
+        <div class="modal-content">
+            <div class="control-group" title="Toggle sound effects on click">
+                <label>Click Sound</label>
+                <label class="switch">
+                    <input type="checkbox" id="sound-toggle">
+                    <span class="slider round"></span>
+                </label>
+            </div>
+            <div class="control-group" title="Toggle haptic feedback on devices that support it">
+                <label>Vibration</label>
+                <label class="switch">
+                    <input type="checkbox" id="vibration-toggle">
+                    <span class="slider round"></span>
+                </label>
+            </div>
+            <div class="control-group" title="Decimal places for result (0-10)">
+                <label>Decimal Precision</label>
+                <input type="number" id="precision-input" min="0" max="10" value="8">
+            </div>
+            <div class="control-group" title="Choose how numbers are formatted">
+                <label>Number Format</label>
+                <select id="number-format">
+                    <option value="us">US (1,234.56)</option>
+                    <option value="eu">EU (1.234,56)</option>
+                    <option value="in">Indian (1,23,456)</option>
+                </select>
+            </div>
+            <div class="control-group" title="Keeps the screen awake while using the app">
+                <label>Screen Awake</label>
+                <label class="switch">
+                    <input type="checkbox" id="wakelock-toggle">
+                    <span class="slider round"></span>
+                </label>
+            </div>
+            <button class="btn-reset" id="clear-all-data">Factory Reset</button>
+        </div>
+    </div>
+
+    <!-- About Modal -->
+    <div class="modal" id="about-modal">
+        <div class="modal-header">
+            <h2>About</h2>
+            <button class="close-modal">&times;</button>
+        </div>
+        <div class="modal-content text-center">
+            <p>Built by <strong>Ashish Apps</strong></p>
+            <a href="https://ashish-apps.blogspot.com/" target="_blank" class="shiny-link">Visit Website</a>
+
+            <div class="changelog-section"
+                style="margin-top: 20px; text-align: left; background: rgba(255,255,255,0.05); padding: 15px; border-radius: 10px;">
+                <h3 style="font-size: 0.9rem; margin-bottom: 10px; color: var(--blob-color-1);">Changelog v1.0</h3>
+                <ul style="font-size: 0.8rem; padding-left: 20px; color: var(--text-secondary);">
+                    <li>Initial Release</li>
+                    <li>Glassmorphism UI</li>
+                    <li>Theme Editor & Sound</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <style>
+:root {
+    --btn-radius: 50%;
+    --bg-color: #0f172a;
+    --glass-bg: rgba(255, 255, 255, 0.05);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --glass-highlight: rgba(255, 255, 255, 0.2);
+    --text-primary: #ffffff;
+    --text-secondary: rgba(255, 255, 255, 0.6);
+
+    --btn-bg: rgba(255, 255, 255, 0.1);
+    --btn-hover: rgba(255, 255, 255, 0.2);
+    --btn-active: rgba(255, 255, 255, 0.3);
+
+    --modal-bg: rgba(30, 41, 59, 0.95);
+
+    --operator-bg: #ff9f0a;
+    --operator-hover: #ffb340;
+    --operator-text: #ffffff;
+
+    --function-bg: #a5a5a5;
+    /* Light gray for top functions like iOS */
+    --function-text: #000000;
+
+    /* Darker Function Keys for Dark Mode look */
+    --function-dark-bg: rgba(255, 255, 255, 0.25);
+    --function-dark-text: #ffffff;
+
+    --blob-color-1: #4f46e5;
+    /* Indigo */
+    --blob-color-2: #ec4899;
+    /* Pink */
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    user-select: none;
+    /* Prevent text selection on double clicks */
+}
+
+body {
+    background-color: var(--bg-color);
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    color: var(--text-primary);
+}
+
+/* Background Ambient Glow */
+.background-glow {
+    position: absolute;
+    width: 60vw;
+    height: 60vw;
+    background: radial-gradient(circle, var(--blob-color-1), transparent 70%);
+    top: -20%;
+    left: -20%;
+    opacity: 0.4;
+    filter: blur(80px);
+    z-index: -1;
+    animation: float 20s infinite alternate ease-in-out;
+}
+
+.background-glow::after {
+    content: '';
+    position: absolute;
+    width: 50vw;
+    height: 50vw;
+    background: radial-gradient(circle, var(--blob-color-2), transparent 70%);
+    bottom: -20%;
+    right: -50%;
+    opacity: 0.3;
+}
+
+@keyframes float {
+    0% {
+        transform: translate(0, 0);
+    }
+
+    100% {
+        transform: translate(100px, 100px);
+    }
+}
+
+.calculator-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+.calculator {
+    background: var(--glass-bg);
+    /* Darker semi-transparent base */
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    border-radius: 40px;
+    padding: 25px;
+    width: 380px;
+    box-shadow:
+        0 25px 50px -12px rgba(0, 0, 0, 0.5),
+        inset 0 0 0 1px var(--glass-border);
+    transition: transform 0.3s ease, border-radius 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.top-bar {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    left: 15px;
+    /* Span full width to allow mode select on left */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 10;
+    pointer-events: none;
+    /* Let clicks pass through empty space */
+}
+
+/* Enable pointer events for children */
+.top-bar>* {
+    pointer-events: auto;
+}
+
+.top-icons {
+    display: flex;
+    gap: 8px;
+}
+
+.mode-select {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--glass-border);
+    color: var(--text-primary);
+    padding: 5px 10px;
+    border-radius: 12px;
+    outline: none;
+    font-size: 0.9rem;
+    cursor: pointer;
+    backdrop-filter: blur(5px);
+}
+
+.mode-select option {
+    background: var(--bg-color);
+    /* Fallback for dropdown legibility */
+    color: white;
+}
+
+.icon-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: color 0.2s;
+    padding: 5px;
+}
+
+.icon-btn:hover {
+    color: var(--text-primary);
+}
+
+.calculator:hover {
+    box-shadow:
+        0 35px 60px -15px rgba(0, 0, 0, 0.6),
+        inset 0 0 0 1px var(--glass-highlight);
+}
+
+.display-area {
+    width: 100%;
+    height: 140px;
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: flex-end;
+    padding: 10px 20px;
+    text-align: right;
+    word-wrap: break-word;
+    word-break: break-all;
+}
+
+.previous-operand {
+    color: var(--text-secondary);
+    font-size: 1.5rem;
+    min-height: 1.5rem;
+    margin-bottom: 5px;
+    font-weight: 300;
+}
+
+.current-operand {
+    color: var(--text-primary);
+    font-size: 4rem;
+    font-weight: 300;
+    line-height: 1;
+    letter-spacing: -1px;
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+}
+
+/* Keypad Grid */
+.keypad {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-gap: 15px;
+}
+
+.btn {
+    border: none;
+    outline: none;
+    cursor: pointer;
+    font-size: 1.7rem;
+    width: 100%;
+    aspect-ratio: 1;
+    border-radius: var(--btn-radius, 50%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.15s ease-out;
+    background: var(--btn-bg);
+    color: var(--text-primary);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Ripple effect container */
+.btn::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.4) 0%, transparent 60%);
+    opacity: 0;
+    transform: scale(0.5);
+    transition: transform 0.3s, opacity 0.3s;
+}
+
+.btn:active::after {
+    opacity: 1;
+    transform: scale(2);
+    transition: 0s;
+}
+
+.btn:hover {
+    background: var(--btn-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.btn:active {
+    background: var(--btn-active);
+    transform: scale(0.95);
+}
+
+/* Special Button Classes */
+.btn-zero {
+    grid-column: span 2;
+    width: 100%;
+    border-radius: 40px;
+    justify-content: flex-start;
+    padding-left: 28px;
+}
+
+.btn-function {
+    background: var(--function-dark-bg);
+    color: var(--function-dark-text);
+    font-size: 1.4rem;
+}
+
+.btn-operator {
+    background: var(--operator-bg);
+    color: var(--operator-text);
+    font-size: 2rem;
+    padding-bottom: 5px;
+    /* Visual adjustment for operators */
+}
+
+.btn-operator:hover {
+    background: var(--operator-hover);
+}
+
+.btn-operator:active {
+    filter: brightness(0.9);
+}
+
+.btn-equal {
+    background: var(--operator-bg);
+    color: var(--operator-text);
+}
+
+/* Brand Name */
+.brand {
+    font-size: 1.2rem;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    background: linear-gradient(90deg, #fff, rgba(255, 255, 255, 0.4));
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    opacity: 0.8;
+}
+
+/* Responsive adjustments */
+@media (max-width: 450px) {
+    .calculator {
+        width: 100%;
+        height: 100%;
+        border-radius: 0;
+        border: none;
+        padding-top: 20%;
+        /* Push down for mobile status bar area simulation */
+    }
+
+    .btn {
+        height: 80px;
+        /* Larger targets on mobile */
+        width: 80px;
+    }
+
+    .keypad {
+        gap: 12px;
+    }
+
+    .display-area {
+        height: 200px;
+    }
+
+    .brand {
+        display: none;
+    }
+}
+
+/* Modal Styles */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(5px);
+    z-index: 100;
+    display: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.modal-overlay.active {
+    display: block;
+    opacity: 1;
+}
+
+.modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.9);
+    background: var(--modal-bg);
+    backdrop-filter: blur(30px);
+    border: 1px solid var(--glass-border);
+    padding: 25px;
+    border-radius: 20px;
+    width: 350px;
+    max-width: 90%;
+    z-index: 101;
+    display: none;
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    color: var(--text-primary);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+
+.modal.active {
+    display: block;
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    border-bottom: 1px solid var(--glass-border);
+    padding-bottom: 10px;
+}
+
+.modal-header h2 {
+    font-size: 1.2rem;
+    font-weight: 500;
+}
+
+.close-modal {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+.modal-content {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.control-group {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.control-group label {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+input[type="color"] {
+    border: none;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+    background: transparent;
+}
+
+input[type="range"] {
+    width: 100px;
+}
+
+input[type="number"] {
+    width: 50px;
+    padding: 5px;
+    border-radius: 5px;
+    border: 1px solid var(--glass-border);
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+.btn-reset {
+    margin-top: 10px;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid var(--glass-border);
+    background: rgba(255, 50, 50, 0.2);
+    color: white;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-reset:hover {
+    background: rgba(255, 50, 50, 0.4);
+}
+
+.text-center {
+    text-align: center;
+}
+
+.shiny-link {
+    color: #3b82f6;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1.1rem;
+    background: linear-gradient(90deg, #3b82f6, #8b5cf6, #3b82f6);
+    background-size: 200% auto;
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shine 3s linear infinite;
+    display: inline-block;
+    margin-top: 5px;
+}
+
+@keyframes shine {
+    to {
+        background-position: 200% center;
+    }
+}
+
+/* Toggle Switch */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 40px;
+    height: 20px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(255, 255, 255, 0.1);
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 16px;
+    width: 16px;
+    left: 2px;
+    bottom: 2px;
+    background-color: white;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+
+input:checked+.slider {
+    background-color: var(--blob-color-1);
+}
+
+input:focus+.slider {
+    box-shadow: 0 0 1px var(--blob-color-1);
+}
+
+input:checked+.slider:before {
+    -webkit-transform: translateX(20px);
+    -ms-transform: translateX(20px);
+    transform: translateX(20px);
+}
+
+/* Rounded sliders */
+.slider.round {
+    border-radius: 34px;
+}
+
+/* Sidebar Styles (History) */
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: -300px;
+    /* Hidden by default */
+    width: 280px;
+    height: 100vh;
+    background: var(--modal-bg);
+    backdrop-filter: blur(20px);
+    border-right: 1px solid var(--glass-border);
+    transition: left 0.3s ease;
+    z-index: 200;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar.active {
+    left: 0;
+    box-shadow: 10px 0 30px rgba(0, 0, 0, 0.5);
+}
+
+.sidebar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--glass-border);
+}
+
+.history-list {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.history-item {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.history-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.history-input {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.history-result {
+    font-size: 1.2rem;
+    color: var(--text-primary);
+    font-weight: 600;
+    text-align: right;
+}
+
+/* Large Modal & Scrollable Content */
+.large-modal {
+    width: 450px;
+    max-height: 85vh;
+}
+
+.scrollable-content {
+    overflow-y: auto;
+    max-height: 70vh;
+    padding-right: 5px;
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.section-title {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    margin: 15px 0 5px 0;
+    font-weight: 600;
+    letter-spacing: 1px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    padding-bottom: 5px;
+}
+
+/* Preset Grid */
+.preset-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+}
+
+.preset-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--glass-border);
+    color: var(--text-primary);
+    padding: 8px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    transition: all 0.2s;
+}
+
+.preset-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
+    transform: translateY(-1px);
+}
+
+/* Improved Select Inputs */
+select {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--glass-border);
+    color: white;
+    padding: 5px;
+    border-radius: 5px;
+    width: 120px;
+}
+</style>
+
+<script>
+
+/* --- Configuration & State --- */
+const ThemePresets = {
+    modern: {
+        '--bg-color': '#0f172a',
+        '--blob-color-1': '#4f46e5',
+        '--blob-color-2': '#ec4899',
+        '--text-primary': '#ffffff',
+        '--text-secondary': 'rgba(255,255,255,0.6)',
+        '--glass-bg': 'rgba(255, 255, 255, 0.05)',
+        '--modal-bg': 'rgba(30, 41, 59, 0.95)',
+        '--operator-bg': '#ff9f0a',
+        '--btn-bg': 'rgba(255, 255, 255, 0.1)'
+    },
+    light: {
+        '--bg-color': '#e2e8f0',
+        '--blob-color-1': '#3b82f6',
+        '--blob-color-2': '#f43f5e',
+        '--text-primary': '#1e293b',
+        '--text-secondary': '#475569',
+        '--glass-bg': 'rgba(255, 255, 255, 0.6)',
+        '--modal-bg': 'rgba(255, 255, 255, 0.95)',
+        '--operator-bg': '#007bff',
+        '--btn-bg': 'rgba(255, 255, 255, 0.8)'
+    },
+    dark: {
+        '--bg-color': '#000000',
+        '--blob-color-1': '#333333',
+        '--blob-color-2': '#1a1a1a',
+        '--text-primary': '#ffffff',
+        '--text-secondary': '#888888',
+        '--glass-bg': 'rgba(20, 20, 20, 0.6)',
+        '--modal-bg': 'rgba(20, 20, 20, 0.95)',
+        '--operator-bg': '#333333',
+        '--btn-bg': 'rgba(255, 255, 255, 0.1)'
+    },
+    amoled: {
+        '--bg-color': '#000000',
+        '--blob-color-1': '#000000',
+        '--blob-color-2': '#000000',
+        '--text-primary': '#ffffff',
+        '--text-secondary': '#666666',
+        '--glass-bg': 'rgba(0,0,0,0)',
+        '--modal-bg': '#000000',
+        '--operator-bg': '#1a1a1a',
+        '--btn-bg': 'rgba(20, 20, 20, 1)'
+    },
+    retro: {
+        '--bg-color': '#d4c5a2',
+        '--blob-color-1': '#c1b085',
+        '--blob-color-2': '#a39265',
+        '--text-primary': '#3e2723',
+        '--text-secondary': '#5d4037',
+        '--glass-bg': 'rgba(255, 255, 255, 0.3)',
+        '--modal-bg': 'rgba(240, 230, 210, 0.95)',
+        '--operator-bg': '#795548',
+        '--btn-bg': 'rgba(255, 255, 255, 0.5)'
+    },
+    classic: {
+        '--bg-color': '#8fbc8f', /* SeaGreenish */
+        '--blob-color-1': '#2e8b57',
+        '--blob-color-2': '#3cb371',
+        '--text-primary': '#000000',
+        '--text-secondary': '#222222',
+        '--glass-bg': 'rgba(255, 255, 255, 0.3)',
+        '--modal-bg': 'rgba(220, 255, 220, 0.95)',
+        '--operator-bg': '#2f4f4f',
+        '--btn-bg': 'rgba(255, 255, 255, 0.5)'
+    },
+    volcano: {
+        '--bg-color': '#2c0b0e',
+        '--blob-color-1': '#b91c1c',
+        '--blob-color-2': '#f87171',
+        '--text-primary': '#ffffff',
+        '--text-secondary': '#fca5a5',
+        '--glass-bg': 'rgba(50, 0, 0, 0.3)',
+        '--modal-bg': 'rgba(40, 10, 15, 0.95)',
+        '--operator-bg': '#ef4444',
+        '--btn-bg': 'rgba(255, 255, 255, 0.1)'
+    },
+    forest: {
+        '--bg-color': '#052e16',
+        '--blob-color-1': '#15803d',
+        '--blob-color-2': '#4ade80',
+        '--text-primary': '#f0fdf4',
+        '--text-secondary': '#86efac',
+        '--glass-bg': 'rgba(0, 50, 0, 0.3)',
+        '--modal-bg': 'rgba(5, 40, 20, 0.95)',
+        '--operator-bg': '#22c55e',
+        '--btn-bg': 'rgba(255, 255, 255, 0.1)'
+    },
+    desert: {
+        '--bg-color': '#78350f',
+        '--blob-color-1': '#ca8a04',
+        '--blob-color-2': '#fbbf24',
+        '--text-primary': '#fef3c7',
+        '--text-secondary': '#fcd34d',
+        '--glass-bg': 'rgba(100, 50, 0, 0.3)',
+        '--modal-bg': 'rgba(120, 50, 15, 0.95)',
+        '--operator-bg': '#d97706',
+        '--btn-bg': 'rgba(255, 255, 255, 0.1)'
+    }
+};
+
+const CalculatorModes = {
+    basic: [
+        { text: 'AC', type: 'function', action: 'clear' },
+        { text: '+/-', type: 'function', action: 'sign' },
+        { text: '%', type: 'function', action: 'percent' },
+        { text: '÷', type: 'operator', action: 'divide' },
+        { text: '7', type: 'number', number: '7' },
+        { text: '8', type: 'number', number: '8' },
+        { text: '9', type: 'number', number: '9' },
+        { text: '×', type: 'operator', action: 'multiply' },
+        { text: '4', type: 'number', number: '4' },
+        { text: '5', type: 'number', number: '5' },
+        { text: '6', type: 'number', number: '6' },
+        { text: '−', type: 'operator', action: 'subtract' },
+        { text: '1', type: 'number', number: '1' },
+        { text: '2', type: 'number', number: '2' },
+        { text: '3', type: 'number', number: '3' },
+        { text: '+', type: 'operator', action: 'add' },
+        { text: '0', type: 'number', number: '0' },
+        { text: '00', type: 'number', number: '00' },
+        { text: '.', type: 'number', number: '.' },
+        { text: '=', type: 'equal', action: 'calculate' }
+    ]
+};
+
+/* --- Logic Classes --- */
+
+class HistoryManager {
+    constructor() {
+        this.listElement = document.getElementById('history-list');
+        this.clearBtn = document.getElementById('clear-history');
+        this.sidebar = document.getElementById('history-sidebar');
+        this.openBtn = document.getElementById('history-btn');
+        this.closeBtn = this.sidebar.querySelector('.close-sidebar');
+
+        this.history = JSON.parse(localStorage.getItem('calctech-history') || '[]');
+        this.render();
+        this.setupEvents();
+    }
+
+    add(expression, result) {
+        if (!expression || !result) return;
+        this.history.unshift({ expression, result, timestamp: Date.now() });
+        if (this.history.length > 50) this.history.pop(); // Limit size
+        this.save();
+        this.render();
+    }
+
+    save() {
+        localStorage.setItem('calctech-history', JSON.stringify(this.history));
+    }
+
+    clear() {
+        this.history = [];
+        this.save();
+        this.render();
+    }
+
+    render() {
+        this.listElement.innerHTML = '';
+        if (this.history.length === 0) {
+            this.listElement.innerHTML = '<div style="text-align:center; color:var(--text-secondary); padding:20px;">No History</div>';
+            return;
+        }
+
+        this.history.forEach((item, index) => {
+            const div = document.createElement('div');
+            div.className = 'history-item';
+            div.innerHTML = `
+                <div class="history-input">${item.expression}</div>
+                <div class="history-result">= ${item.result}</div>
+            `;
+            div.onclick = () => {
+                calculator.currentOperand = item.result.toString();
+                calculator.updateDisplay();
+                this.toggleSidebar();
+            };
+            this.listElement.appendChild(div);
+        });
+    }
+
+    setupEvents() {
+        this.clearBtn.onclick = () => this.clear();
+        this.openBtn.onclick = () => this.toggleSidebar();
+        this.closeBtn.onclick = () => this.toggleSidebar();
+    }
+
+    toggleSidebar() {
+        this.sidebar.classList.toggle('active');
+    }
+}
+
+class Calculator {
+    constructor(prevOperandElem, currOperandElem) {
+        this.prevOperandElem = prevOperandElem;
+        this.currOperandElem = currOperandElem;
+        this.settings = {
+            precision: 8,
+            format: 'us', // us, eu, in
+            wakelock: false,
+            base: 10 // 10, 16, 2
+        };
+        this.isScientific = false;
+        this.clear();
+    }
+
+    clear() {
+        this.currentOperand = '0';
+        this.previousOperand = '';
+        this.operation = undefined;
+        this.shouldResetScreen = false;
+    }
+
+    delete() {
+        if (this.currentOperand === '0') return;
+        if (this.currentOperand.length === 1) {
+            this.currentOperand = '0';
+        } else {
+            this.currentOperand = this.currentOperand.toString().slice(0, -1);
+        }
+    }
+
+    appendNumber(number) {
+        if (this.shouldResetScreen) {
+            this.currentOperand = '';
+            this.shouldResetScreen = false;
+        }
+        if (number === '.' && this.currentOperand.includes('.')) return;
+        // Prevent invalid digits for the base
+        if (this.settings.base === 2 && !['0', '1'].includes(number.toString())) return;
+        if (this.settings.base === 10 && 'ABCDEF'.includes(number.toString())) return;
+
+        if (this.currentOperand === '0' && number !== '.') {
+            this.currentOperand = number.toString();
+        } else {
+            this.currentOperand = this.currentOperand.toString() + number.toString();
+        }
+    }
+
+    chooseOperation(operation) {
+        if (this.currentOperand === '') return;
+        if (this.previousOperand !== '') {
+            this.compute();
+        }
+        this.operation = operation;
+        this.previousOperand = this.currentOperand;
+        this.shouldResetScreen = true;
+    }
+
+    advancedFunction(funcName) {
+        // Advanced functions strictly in Decimal for now
+        let val = parseFloat(this.currentOperand);
+        if (this.settings.base !== 10) val = parseInt(this.currentOperand, this.settings.base);
+
+        if (isNaN(val)) return;
+        let res = 0;
+        switch (funcName) {
+            case 'sin': res = Math.sin(val); break;
+            case 'cos': res = Math.cos(val); break;
+            case 'tan': res = Math.tan(val); break;
+            case 'log': res = Math.log10(val); break;
+            case 'ln': res = Math.log(val); break;
+            case 'sqrt': res = Math.sqrt(val); break;
+            default: return;
+        }
+        this.currentOperand = res; // internal result is decimal
+        if (this.settings.base !== 10) {
+            this.currentOperand = Math.floor(res).toString(this.settings.base).toUpperCase();
+        }
+        this.shouldResetScreen = true;
+        this.updateDisplay();
+    }
+
+    compute() {
+        let computation;
+        let prev, current;
+
+        if (this.settings.base === 10) {
+            prev = parseFloat(this.previousOperand);
+            current = parseFloat(this.currentOperand);
+        } else {
+            prev = parseInt(this.previousOperand, this.settings.base);
+            current = parseInt(this.currentOperand, this.settings.base);
+        }
+
+        if (isNaN(prev) || isNaN(current)) return;
+
+        switch (this.operation) {
+            case '+': computation = prev + current; break;
+            case '-': computation = prev - current; break;
+            case '×': computation = prev * current; break;
+            case '÷': computation = prev / current; break;
+            case '^': computation = Math.pow(prev, current); break;
+            default: return;
+        }
+
+        // History Tracking (Display in current base)
+        const expression = `${this.previousOperand} ${this.operation} ${this.currentOperand}`;
+
+        let resString;
+        if (this.settings.base === 10) {
+            resString = computation;
+            this.currentOperand = computation;
+        } else {
+            // Integer math for non-decimal
+            computation = Math.floor(computation);
+            resString = computation.toString(this.settings.base).toUpperCase();
+            this.currentOperand = resString;
+        }
+
+        historyManager.add(expression, resString);
+
+        this.operation = undefined;
+        this.previousOperand = '';
+        this.shouldResetScreen = true;
+    }
+
+    getDisplayNumber(number) {
+        const stringNumber = number.toString();
+        if (this.settings.base !== 10) {
+            return stringNumber.toUpperCase();
+        }
+
+        const integerDigits = parseFloat(stringNumber.split('.')[0]);
+        const decimalDigits = stringNumber.split('.')[1];
+
+        let integerDisplay;
+        if (isNaN(integerDigits)) {
+            integerDisplay = '';
+        } else {
+            let locale = 'en-US';
+            if (this.settings.format === 'eu') locale = 'de-DE';
+            if (this.settings.format === 'in') locale = 'en-IN';
+            integerDisplay = integerDigits.toLocaleString(locale, { maximumFractionDigits: 0 });
+        }
+
+        if (decimalDigits != null) {
+            return `${integerDisplay}.${decimalDigits.slice(0, this.settings.precision)}`;
+        } else {
+            return integerDisplay;
+        }
+    }
+
+    setBase(newBase) {
+        if (this.settings.base === newBase) return;
+
+        // Convert current operand to new base
+        // First parse current to decimal number
+        let val;
+        if (this.settings.base === 10) {
+            val = parseFloat(this.currentOperand); // Handle float in decimal
+            val = Math.floor(val); // Integer for programmer mode transition
+        } else {
+            val = parseInt(this.currentOperand, this.settings.base);
+        }
+
+        if (isNaN(val)) {
+            this.currentOperand = '0';
+        } else {
+            this.currentOperand = val.toString(newBase).toUpperCase();
+        }
+
+        this.settings.base = newBase;
+        this.updateDisplay();
+    }
+
+    updateDisplay() {
+        this.currOperandElem.innerText = this.getDisplayNumber(this.currentOperand);
+        if (this.operation != null) {
+            this.prevOperandElem.innerText =
+                `${this.getDisplayNumber(this.previousOperand)} ${this.operation}`;
+        } else {
+            this.prevOperandElem.innerText = '';
+        }
+    }
+
+    toggleSign() {
+        if (this.currentOperand === '0') return;
+        // Simplified sign toggle for decimal only usually, but let's try
+        if (this.settings.base === 10) {
+            this.currentOperand = (parseFloat(this.currentOperand) * -1).toString();
+        } else {
+            // For hex/bin, sign is complex (2's complement vs - sign). 
+            // Let's just do math negate
+            let val = parseInt(this.currentOperand, this.settings.base);
+            val = -val;
+            this.currentOperand = val.toString(this.settings.base).toUpperCase();
+        }
+    }
+
+    percentage() {
+        if (this.settings.base !== 10) return; // No percent in Hex
+        this.currentOperand = (parseFloat(this.currentOperand) / 100).toString();
+    }
+}
+
+/* --- Initialization --- */
+
+const prevOpElem = document.getElementById('previous-operand');
+const currOpElem = document.getElementById('current-operand');
+const calculator = new Calculator(prevOpElem, currOpElem);
+const historyManager = new HistoryManager();
+
+/* --- Mode Switcher --- */
+// const modeSelector = document.getElementById('mode-selector'); 
+// Removed mode selector logic as it's just basic now.
+
+// Initialize Layout
+const keypad = document.querySelector('.keypad');
+
+function loadBasicMode() {
+    // Reset base to 10 on mode switch unless it's programmer
+    if ('basic' !== 'programmer' && calculator.settings.base !== 10) {
+        calculator.setBase(10);
+    }
+
+    keypad.innerHTML = '';
+    const layout = CalculatorModes['basic'];
+
+    // Always use 4 columns for consistency, adapt content to rows
+    keypad.style.gridTemplateColumns = 'repeat(4, 1fr)';
+
+    layout.forEach(btnConfig => {
+        const btn = document.createElement('button');
+        btn.className = `btn ${btnConfig.class || ''}`;
+
+        if (btnConfig.type === 'number') btn.classList.add('btn-number');
+        if (btnConfig.type === 'operator') btn.classList.add('btn-operator');
+        if (btnConfig.type === 'function') btn.classList.add('btn-function');
+        if (btnConfig.type === 'equal') btn.classList.add('btn-equal');
+
+        btn.innerText = btnConfig.text;
+
+        // Attach Logic
+        btn.onclick = () => {
+            handleInput(btnConfig, btn.innerText);
+            animateButton(btn);
+            playClickSound();
+            triggerVibration();
+        };
+
+        keypad.appendChild(btn);
+    });
+}
+
+function handleInput(config, text) {
+    if (config.type === 'number') {
+        calculator.appendNumber(config.number);
+    } else if (config.type === 'operator') {
+        calculator.chooseOperation(config.action === 'multiply' ? '×' : config.action === 'divide' ? '÷' : config.action === 'subtract' ? '-' : config.action === 'add' ? '+' : text);
+    } else if (config.type === 'equal') {
+        calculator.compute();
+    } else if (config.type === 'function') {
+        if (config.action === 'clear') calculator.clear();
+        if (config.action === 'sign') calculator.toggleSign();
+        if (config.action === 'percent') calculator.percentage();
+        if (['sin', 'cos', 'tan', 'log', 'sqrt'].includes(config.action)) calculator.advancedFunction(config.action);
+        if (['base_hex', 'base_bin', 'base_dec'].includes(config.action)) {
+            const baseMap = { base_hex: 16, base_bin: 2, base_dec: 10 };
+            calculator.setBase(baseMap[config.action]);
+        }
+    }
+    calculator.updateDisplay();
+}
+
+// modeSelector.addEventListener('change', (e) => loadMode(e.target.value));
+// Initial Load
+loadBasicMode();
+
+function handleInput(config, text) {
+    if (config.type === 'number') {
+        calculator.appendNumber(config.number);
+    } else if (config.type === 'operator') {
+        calculator.chooseOperation(config.action === 'multiply' ? '×' : config.action === 'divide' ? '÷' : config.action === 'subtract' ? '-' : config.action === 'add' ? '+' : text);
+    } else if (config.type === 'equal') {
+        calculator.compute();
+    } else if (config.type === 'function') {
+        if (config.action === 'clear') calculator.clear();
+        if (config.action === 'sign') calculator.toggleSign();
+        if (config.action === 'percent') calculator.percentage();
+    }
+    calculator.updateDisplay();
+}
+
+
+/* --- Advanced Customization & Settings --- */
+
+const inputs = {
+    '--blob-color-1': document.getElementById('blob-color-1'),
+    '--blob-color-2': document.getElementById('blob-color-2'),
+    '--text-primary': document.getElementById('text-primary'),
+    '--text-secondary': document.getElementById('text-secondary'),
+    '--operator-bg': document.getElementById('operator-bg'),
+};
+
+// Shape & Elevation
+document.getElementById('btn-shape-select').addEventListener('change', (e) => {
+    document.documentElement.style.setProperty('--btn-radius', e.target.value);
+    document.querySelectorAll('.btn').forEach(b => b.style.borderRadius = e.target.value);
+});
+document.getElementById('elevation-select').addEventListener('change', (e) => {
+    const val = e.target.value;
+    const calc = document.querySelector('.calculator');
+    if (val === 'flat') {
+        calc.style.boxShadow = 'none';
+        calc.style.border = '1px solid rgba(255,255,255,0.05)';
+    } else if (val === '2d') {
+        calc.style.boxShadow = '0 10px 30px -10px rgba(0,0,0,0.3)';
+    } else if (val === '3d') {
+        calc.style.boxShadow = '0 25px 50px -12px rgba(0, 0, 0, 0.5), inset 0 0 0 1px var(--glass-border)';
+    }
+});
+document.getElementById('font-select').addEventListener('change', (e) => {
+    document.body.style.fontFamily = e.target.value;
+});
+
+// Presets
+document.querySelectorAll('.preset-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        const themeName = btn.dataset.theme;
+        const theme = ThemePresets[themeName];
+        if (!theme) return;
+
+        for (const [key, val] of Object.entries(theme)) {
+            document.documentElement.style.setProperty(key, val);
+            // Update inputs if they exist
+            if (inputs[key]) inputs[key].value = val;
+        }
+    });
+});
+
+// BG Image
+document.getElementById('bg-image-upload').addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+            document.body.style.backgroundImage = `url(${ev.target.result})`;
+            document.body.style.backgroundSize = 'cover';
+        };
+        reader.readAsDataURL(file);
+    }
+});
+
+// Settings Input Logic
+document.getElementById('precision-input').addEventListener('input', (e) => {
+    calculator.settings.precision = parseInt(e.target.value);
+    calculator.updateDisplay();
+});
+document.getElementById('number-format').addEventListener('change', (e) => {
+    calculator.settings.format = e.target.value;
+    calculator.updateDisplay();
+});
+document.getElementById('wakelock-toggle').addEventListener('change', async (e) => {
+    if (e.target.checked && 'wakeLock' in navigator) {
+        try {
+            await navigator.wakeLock.request('screen');
+        } catch (err) { console.log(err); }
+    }
+});
+
+
+// Reuse existing Modal & Sound logic...
+const modalOverlay = document.getElementById('modal-overlay');
+const themeModal = document.getElementById('theme-modal');
+const settingsModal = document.getElementById('settings-modal');
+const aboutModal = document.getElementById('about-modal');
+
+document.getElementById('theme-btn').onclick = () => openModal(themeModal);
+document.getElementById('settings-btn').onclick = () => openModal(settingsModal);
+document.getElementById('brand-link').onclick = () => openModal(aboutModal);
+modalOverlay.onclick = () => closeModal();
+document.querySelectorAll('.close-modal').forEach(b => b.onclick = closeModal);
+
+function openModal(m) {
+    modalOverlay.classList.add('active');
+    m.classList.add('active');
+}
+function closeModal() {
+    modalOverlay.classList.remove('active');
+    document.querySelectorAll('.modal').forEach(m => m.classList.remove('active'));
+}
+
+// Sound & Haptics (Simplified for length)
+let soundEnabled = false, vibrationEnabled = false;
+document.getElementById('sound-toggle').addEventListener('change', (e) => soundEnabled = e.target.checked);
+document.getElementById('vibration-toggle').addEventListener('change', (e) => vibrationEnabled = e.target.checked);
+
+function playClickSound() {
+    if (!soundEnabled) return;
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const oscillator = audioCtx.createOscillator();
+    const gainNode = audioCtx.createGain();
+
+    oscillator.type = 'sine';
+    oscillator.frequency.setValueAtTime(800, audioCtx.currentTime);
+    oscillator.frequency.exponentialRampToValueAtTime(300, audioCtx.currentTime + 0.1);
+
+    gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+
+    oscillator.connect(gainNode);
+    gainNode.connect(audioCtx.destination);
+
+    oscillator.start();
+    oscillator.stop(audioCtx.currentTime + 0.1);
+}
+function triggerVibration() { if (vibrationEnabled && navigator.vibrate) navigator.vibrate(5); }
+function animateButton(btn) { btn.classList.add('pressed'); setTimeout(() => btn.classList.remove('pressed'), 100); }
+
+</script>
+</body>
+
+</html>

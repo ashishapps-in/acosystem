@@ -3,144 +3,262 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>My Tools Hub</title>
+  <title>Acosystem — All Simple Tools</title>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background: #0f1117;
-      color: #e0e0e0;
-      min-height: 100vh;
-      padding: 40px 20px;
+    :root {
+      --bg: #0d0f1a;
+      --surface: #161929;
+      --border: #252840;
+      --border-hover: #6e8efb;
+      --text: #e2e4f0;
+      --muted: #6b7090;
+      --accent1: #6e8efb;
+      --accent2: #a777e3;
     }
 
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 48px 20px 80px;
+    }
+
+    /* ── Header ── */
     header {
       text-align: center;
-      margin-bottom: 40px;
+      margin-bottom: 48px;
+    }
+
+    .logo {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .logo-icon {
+      font-size: 2.4rem;
+      line-height: 1;
     }
 
     header h1 {
-      font-size: 2.5rem;
-      background: linear-gradient(135deg, #6e8efb, #a777e3);
+      font-size: 2.6rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: -0.5px;
     }
 
     header p {
-      color: #888;
-      margin-top: 8px;
+      color: var(--muted);
       font-size: 1rem;
+      margin-top: 6px;
+    }
+
+    /* ── Search ── */
+    .search-wrap {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 40px;
     }
 
     #search {
-      display: block;
-      margin: 0 auto 40px;
-      padding: 12px 20px;
       width: 100%;
-      max-width: 500px;
-      background: #1e2130;
-      border: 1px solid #2e3250;
-      border-radius: 12px;
-      color: #e0e0e0;
-      font-size: 1rem;
+      max-width: 520px;
+      padding: 13px 20px 13px 46px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      color: var(--text);
+      font-size: 0.95rem;
       outline: none;
+      transition: border-color 0.2s;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%236b7090' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: 14px center;
     }
 
-    #search:focus {
-      border-color: #6e8efb;
+    #search:focus { border-color: var(--accent1); }
+    #search::placeholder { color: var(--muted); }
+
+    /* ── Stats bar ── */
+    #stats {
+      text-align: center;
+      font-size: 0.82rem;
+      color: var(--muted);
+      margin-bottom: 28px;
+      min-height: 18px;
     }
 
+    /* ── Grid ── */
     #grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-      gap: 20px;
+      grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+      gap: 18px;
       max-width: 1200px;
       margin: 0 auto;
     }
 
+    /* ── Card ── */
     .card {
-      background: #1e2130;
-      border: 1px solid #2e3250;
-      border-radius: 16px;
-      padding: 24px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 26px 22px 22px;
       text-decoration: none;
       color: inherit;
-      transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
       display: flex;
       flex-direction: column;
       gap: 10px;
+      transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(110,142,251,0.05), rgba(167,119,227,0.05));
+      opacity: 0;
+      transition: opacity 0.2s;
+      border-radius: inherit;
     }
 
     .card:hover {
-      transform: translateY(-4px);
-      border-color: #6e8efb;
-      box-shadow: 0 8px 30px rgba(110, 142, 251, 0.15);
+      transform: translateY(-5px);
+      border-color: var(--border-hover);
+      box-shadow: 0 10px 36px rgba(110,142,251,0.14);
     }
+
+    .card:hover::before { opacity: 1; }
 
     .card-icon {
       font-size: 2rem;
+      line-height: 1;
     }
 
     .card h2 {
-      font-size: 1.1rem;
-      color: #ffffff;
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: #fff;
+      line-height: 1.3;
     }
 
     .card p {
-      font-size: 0.875rem;
-      color: #888;
+      font-size: 0.85rem;
+      color: var(--muted);
+      line-height: 1.55;
       flex-grow: 1;
     }
 
-    .card-date {
-      font-size: 0.75rem;
-      color: #555;
+    .card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 4px;
     }
 
-    #status {
-      text-align: center;
-      color: #888;
-      margin-top: 60px;
-      font-size: 0.9rem;
+    .card-tag {
+      font-size: 0.72rem;
+      color: var(--accent1);
+      background: rgba(110,142,251,0.1);
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-weight: 500;
     }
 
-    .loading {
-      text-align: center;
-      padding: 60px;
-      color: #555;
+    .card-arrow {
+      color: var(--muted);
       font-size: 1rem;
+      transition: color 0.2s, transform 0.2s;
+    }
+
+    .card:hover .card-arrow {
+      color: var(--accent1);
+      transform: translateX(3px);
+    }
+
+    /* ── Empty / loading states ── */
+    .state {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 80px 20px;
+      color: var(--muted);
+      font-size: 1rem;
+    }
+
+    .state span {
+      display: block;
+      font-size: 3rem;
+      margin-bottom: 16px;
+    }
+
+    /* ── Footer ── */
+    footer {
+      text-align: center;
+      margin-top: 70px;
+      color: var(--muted);
+      font-size: 0.8rem;
+    }
+
+    footer a {
+      color: var(--accent1);
+      text-decoration: none;
     }
   </style>
 </head>
 <body>
 
 <header>
-  <h1>🛠️ My Tools Hub</h1>
-  <p>All my tools in one place</p>
+  <div class="logo">
+    <span class="logo-icon">🛠️</span>
+    <h1>Acosystem</h1>
+  </div>
+  <p>All simple tools collected at one place</p>
 </header>
 
-<input type="text" id="search" placeholder="🔍 Search tools...">
+<div class="search-wrap">
+  <input type="text" id="search" placeholder="Search tools...">
+</div>
 
-<div id="grid"><div class="loading">Loading tools...</div></div>
-<div id="status"></div>
+<div id="stats"></div>
+<div id="grid"><div class="state"><span>⏳</span>Loading tools...</div></div>
+
+<footer>
+  Hosted on <a href="https://github.com/ashishapps-in/acosystem" target="_blank">GitHub</a>
+  &nbsp;·&nbsp; Add a new <code>.html</code> file to the repo and it appears here automatically
+</footer>
 
 <script>
-  // ⚠️ CHANGE THESE TWO VALUES:
-  const GITHUB_USERNAME = 'YOUR_USERNAME';
-  const GITHUB_REPO = 'tools';
+  const USERNAME = 'ashishapps-in';
+  const REPO     = 'acosystem';
+  const BASE_URL = `https://${USERNAME}.github.io/${REPO}/`;
+  const API_URL  = `https://api.github.com/repos/${USERNAME}/${REPO}/contents/`;
 
-  const icons = ['🧮','📝','🎨','🔧','📊','🔍','⚙️','🗂️','🖼️','📐','🎯','🔐','📋','🌐','⏱️'];
+  const ICONS = [
+    '🔗','🧮','📝','🎨','🔧','📊','🔍','⚙️','🗂️','🖼️',
+    '📐','🎯','🔐','📋','🌐','⏱️','📌','🧩','🪄','💡'
+  ];
+
   let allCards = [];
 
+  /* Fetch <title> and <meta description> from a live HTML page */
   async function fetchMeta(url) {
     try {
-      const res = await fetch(url);
-      const text = await res.text();
-      const parser = new DOMParser();
-      const doc = parser.parseFromString(text, 'text/html');
-      const title = doc.querySelector('title')?.innerText || '';
-      const desc = doc.querySelector('meta[name="description"]')?.getAttribute('content') || 'No description provided.';
+      const res  = await fetch(url);
+      if (!res.ok) throw new Error();
+      const html = await res.text();
+      const doc  = new DOMParser().parseFromString(html, 'text/html');
+      const title = doc.querySelector('title')?.textContent?.trim() || '';
+      const desc  = doc.querySelector('meta[name="description"]')
+                       ?.getAttribute('content')?.trim()
+                    || 'No description provided.';
       return { title, desc };
     } catch {
       return { title: '', desc: 'Could not load description.' };
@@ -148,69 +266,71 @@
   }
 
   async function loadTools() {
-    const apiUrl = `https://api.github.com/repos/${ashishapps-in}/${acosystem}/contents/`;
-    const grid = document.getElementById('grid');
-    const status = document.getElementById('status');
+    const grid  = document.getElementById('grid');
+    const stats = document.getElementById('stats');
 
     try {
-      const res = await fetch(apiUrl);
+      const res   = await fetch(API_URL);
+      if (!res.ok) throw new Error('API error ' + res.status);
       const files = await res.json();
 
       const htmlFiles = files.filter(f =>
-        f.name.endsWith('.html') && f.name !== 'index.html'
+        f.type === 'file' &&
+        f.name.endsWith('.html') &&
+        f.name !== 'index.html'
       );
 
       if (htmlFiles.length === 0) {
-        grid.innerHTML = '<div class="loading">No tools found yet. Add some HTML files!</div>';
+        grid.innerHTML = `<div class="state"><span>📭</span>No tools yet — push a <code>.html</code> file to the repo!</div>`;
         return;
       }
 
-      grid.innerHTML = '';
+      /* Fetch meta for all files in parallel */
+      const cards = await Promise.all(
+        htmlFiles.map(async (file, i) => {
+          const url  = BASE_URL + file.name;
+          const { title, desc } = await fetchMeta(url);
+          const name = title || file.name.replace(/\.html$/i, '').replace(/[-_]/g, ' ');
+          const icon = ICONS[i % ICONS.length];
+          return { name, desc, url, icon, file: file.name };
+        })
+      );
 
-      const liveBase = `https://${ashishapps-in}.github.io/${acosystem}/`;
-
-      const cardPromises = htmlFiles.map(async (file, i) => {
-        const liveUrl = liveBase + file.name;
-        const { title, desc } = await fetchMeta(liveUrl);
-        const displayName = title || file.name.replace('.html', '').replace(/-/g, ' ');
-        const date = new Date(file.name ? Date.now() : 0);
-        const icon = icons[i % icons.length];
-
-        return { displayName, desc, liveUrl, icon, fileName: file.name };
-      });
-
-      allCards = await Promise.all(cardPromises);
-      renderCards(allCards);
-      status.textContent = `${allCards.length} tool${allCards.length !== 1 ? 's' : ''} loaded`;
+      allCards = cards;
+      render(allCards);
+      stats.textContent = `${allCards.length} tool${allCards.length !== 1 ? 's' : ''} available`;
 
     } catch (err) {
-      grid.innerHTML = '<div class="loading">❌ Failed to load tools. Check your username and repo name.</div>';
-      console.error(err);
+      grid.innerHTML = `<div class="state"><span>❌</span>Failed to load tools.<br><small>${err.message}</small></div>`;
     }
   }
 
-  function renderCards(cards) {
+  function render(cards) {
     const grid = document.getElementById('grid');
-    if (cards.length === 0) {
-      grid.innerHTML = '<div class="loading">No tools match your search.</div>';
+    if (!cards.length) {
+      grid.innerHTML = `<div class="state"><span>🔎</span>No tools match your search.</div>`;
       return;
     }
-    grid.innerHTML = cards.map(c => `
-      <a class="card" href="${c.liveUrl}" target="_blank">
+    grid.innerHTML = cards.map((c, i) => `
+      <a class="card" href="${c.url}" target="_blank" rel="noopener">
         <div class="card-icon">${c.icon}</div>
-        <h2>${c.displayName}</h2>
+        <h2>${c.name}</h2>
         <p>${c.desc}</p>
+        <div class="card-footer">
+          <span class="card-tag">tool</span>
+          <span class="card-arrow">→</span>
+        </div>
       </a>
     `).join('');
   }
 
   document.getElementById('search').addEventListener('input', function () {
-    const q = this.value.toLowerCase();
-    const filtered = allCards.filter(c =>
-      c.displayName.toLowerCase().includes(q) ||
+    const q = this.value.toLowerCase().trim();
+    if (!q) { render(allCards); return; }
+    render(allCards.filter(c =>
+      c.name.toLowerCase().includes(q) ||
       c.desc.toLowerCase().includes(q)
-    );
-    renderCards(filtered);
+    ));
   });
 
   loadTools();

@@ -1,0 +1,1348 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ultimate URL Shortener | Premium Link Management</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Inter:wght@300;400;600&display=swap"
+        rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+</head>
+<style>
+:root {
+    --primary: #833ab4;
+    --primary-light: #c13584;
+    --secondary: #fd1d1d;
+    --accent: #fcb045;
+    --bg-dark: #0a0a0c;
+    --card-bg: rgba(255, 255, 255, 0.03);
+    --border-color: rgba(255, 255, 255, 0.1);
+    --text-white: #ffffff;
+    --text-dim: #a0a0a8;
+    --gradient-main: linear-gradient(45deg, #833ab4, #fd1d1d, #fcb045);
+    --glass-blur: blur(20px);
+    --transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    --success: #00ff88;
+    --error: #ff4444;
+    --warning: #ffaa00;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+}
+
+body {
+    background-color: var(--bg-dark);
+    color: var(--text-white);
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    padding: 40px 20px;
+}
+
+h1,
+h2,
+h3,
+.primary-btn {
+    font-family: 'Outfit', sans-serif;
+}
+
+/* Background Blobs */
+.blob-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    overflow: hidden;
+}
+
+.blob {
+    position: absolute;
+    filter: blur(80px);
+    opacity: 0.3;
+    border-radius: 50%;
+    animation: move 20s infinite alternate;
+}
+
+.blob-1 {
+    width: 600px;
+    height: 600px;
+    background: var(--primary);
+    top: -100px;
+    left: -100px;
+    animation-duration: 25s;
+}
+
+.blob-2 {
+    width: 500px;
+    height: 500px;
+    background: var(--secondary);
+    bottom: -100px;
+    right: -100px;
+    animation-duration: 30s;
+}
+
+.blob-3 {
+    width: 400px;
+    height: 400px;
+    background: var(--accent);
+    top: 40%;
+    left: 40%;
+    animation-duration: 35s;
+}
+
+@keyframes move {
+    from {
+        transform: translate(0, 0) scale(1);
+    }
+
+    to {
+        transform: translate(100px, 100px) scale(1.1);
+    }
+}
+
+.container {
+    width: 100%;
+    max-width: 900px;
+    z-index: 1;
+}
+
+.hero {
+    text-align: center;
+    margin-bottom: 60px;
+}
+
+.glitch-text {
+    font-size: 4.5rem;
+    font-weight: 800;
+    letter-spacing: 4px;
+    background: var(--gradient-main);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 10px;
+    position: relative;
+    display: inline-block;
+}
+
+/* Fixed Glitch Effect */
+.glitch-text::before,
+.glitch-text::after {
+    content: attr(data-text);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+}
+
+.glitch-text::before {
+    left: 2px;
+    text-shadow: -2px 0 #ff00c1;
+    clip: rect(44px, 450px, 56px, 0);
+    animation: glitch-anim 5s infinite linear alternate-reverse;
+}
+
+.glitch-text::after {
+    left: -2px;
+    text-shadow: -2px 0 #00fff9;
+    clip: rect(44px, 450px, 56px, 0);
+    animation: glitch-anim2 5s infinite linear alternate-reverse;
+}
+
+.tag-status-text {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    font-weight: 700;
+    margin-top: -5px;
+}
+
+.tag-status-text.working {
+    color: var(--success);
+}
+
+.tag-status-text.no-connection {
+    color: var(--error);
+}
+
+.tag-status-text.checking {
+    color: var(--warning);
+}
+
+@keyframes glitch-anim {
+    0% {
+        clip: rect(31px, 9999px, 94px, 0);
+    }
+
+    5% {
+        clip: rect(70px, 9999px, 71px, 0);
+    }
+
+    10% {
+        clip: rect(29px, 9999px, 83px, 0);
+    }
+
+    15% {
+        clip: rect(16px, 9999px, 91px, 0);
+    }
+
+    20% {
+        clip: rect(2px, 9999px, 23px, 0);
+    }
+
+    25% {
+        clip: rect(63px, 9999px, 80px, 0);
+    }
+
+    30% {
+        clip: rect(34px, 9999px, 60px, 0);
+    }
+
+    35% {
+        clip: rect(96px, 9999px, 98px, 0);
+    }
+
+    40% {
+        clip: rect(66px, 9999px, 79px, 0);
+    }
+
+    45% {
+        clip: rect(56px, 9999px, 16px, 0);
+    }
+
+    50% {
+        clip: rect(60px, 9999px, 40px, 0);
+    }
+
+    55% {
+        clip: rect(8px, 9999px, 2px, 0);
+    }
+
+    60% {
+        clip: rect(52px, 9999px, 92px, 0);
+    }
+
+    65% {
+        clip: rect(22px, 9999px, 32px, 0);
+    }
+
+    70% {
+        clip: rect(30px, 9999px, 92px, 0);
+    }
+
+    75% {
+        clip: rect(98px, 9999px, 9px, 0);
+    }
+
+    80% {
+        clip: rect(54px, 9999px, 46px, 0);
+    }
+
+    85% {
+        clip: rect(41px, 9999px, 45px, 0);
+    }
+
+    90% {
+        clip: rect(87px, 9999px, 8px, 0);
+    }
+
+    95% {
+        clip: rect(22px, 9999px, 35px, 0);
+    }
+
+    100% {
+        clip: rect(48px, 9999px, 49px, 0);
+    }
+}
+
+@keyframes glitch-anim2 {
+    0% {
+        clip: rect(65px, 9999px, 100px, 0);
+    }
+
+    5% {
+        clip: rect(52px, 9999px, 61px, 0);
+    }
+
+    10% {
+        clip: rect(57px, 9999px, 88px, 0);
+    }
+
+    15% {
+        clip: rect(34px, 9999px, 5px, 0);
+    }
+
+    20% {
+        clip: rect(27px, 9999px, 61px, 0);
+    }
+
+    25% {
+        clip: rect(38px, 9999px, 63px, 0);
+    }
+
+    30% {
+        clip: rect(59px, 9999px, 73px, 0);
+    }
+
+    35% {
+        clip: rect(41px, 9999px, 23px, 0);
+    }
+
+    40% {
+        clip: rect(5px, 9999px, 86px, 0);
+    }
+
+    45% {
+        clip: rect(46px, 9999px, 18px, 0);
+    }
+
+    50% {
+        clip: rect(58px, 9999px, 34px, 0);
+    }
+
+    55% {
+        clip: rect(84px, 9999px, 43px, 0);
+    }
+
+    60% {
+        clip: rect(94px, 9999px, 31px, 0);
+    }
+
+    65% {
+        clip: rect(38px, 9999px, 15px, 0);
+    }
+
+    70% {
+        clip: rect(27px, 9999px, 82px, 0);
+    }
+
+    75% {
+        clip: rect(100px, 9999px, 73px, 0);
+    }
+
+    80% {
+        clip: rect(34px, 9999px, 74px, 0);
+    }
+
+    85% {
+        clip: rect(17px, 9999px, 93px, 0);
+    }
+
+    90% {
+        clip: rect(64px, 9999px, 92px, 0);
+    }
+
+    95% {
+        clip: rect(38px, 9999px, 7px, 0);
+    }
+
+    100% {
+        clip: rect(68px, 9999px, 78px, 0);
+    }
+}
+
+.subtitle {
+    color: var(--text-dim);
+    font-size: 1.1rem;
+    letter-spacing: 0.5px;
+}
+
+/* Glass Template */
+.glass {
+    background: var(--card-bg);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--border-color);
+    border-radius: 24px;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
+.input-card {
+    padding: 30px;
+    margin-bottom: 40px;
+    transition: var(--transition);
+}
+
+.input-card:focus-within {
+    border-color: rgba(255, 255, 255, 0.3);
+    transform: translateY(-5px);
+}
+
+.service-selection {
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.selection-label {
+    font-size: 0.9rem;
+    color: var(--text-dim);
+    font-weight: 600;
+}
+
+.glass-select {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 10px 15px;
+    color: white;
+    font-size: 0.9rem;
+    outline: none;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.glass-select:focus {
+    border-color: var(--primary-light);
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.glass-select option {
+    background: var(--bg-dark);
+    color: white;
+}
+
+.input-group {
+    display: flex;
+    gap: 15px;
+}
+
+input[type="url"] {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 18px 25px;
+    color: white;
+    font-size: 1rem;
+    outline: none;
+    transition: var(--transition);
+}
+
+input[type="url"]:focus {
+    border-color: var(--primary-light);
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.primary-btn {
+    background: var(--gradient-main);
+    border: none;
+    border-radius: 16px;
+    padding: 18px 35px;
+    color: white;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: var(--transition);
+    white-space: nowrap;
+}
+
+.primary-btn:hover {
+    transform: scale(1.02);
+    box-shadow: 0 0 20px rgba(131, 58, 180, 0.5);
+}
+
+.primary-btn span {
+    position: relative;
+    z-index: 1;
+}
+
+/* Results Grid */
+.results-container {
+    margin-bottom: 60px;
+    animation: fadeIn 0.8s ease-out;
+}
+
+.section-title {
+    font-size: 1.5rem;
+    margin-bottom: 25px;
+    font-weight: 600;
+    text-align: center;
+}
+
+.results-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+.result-card {
+    padding: 25px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    animation: slideUp 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+.provider-badge {
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: var(--accent);
+    letter-spacing: 1px;
+}
+
+.short-url {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: white;
+    word-break: break-all;
+}
+
+.actions {
+    display: flex;
+    gap: 10px;
+    margin-top: auto;
+}
+
+.action-btn {
+    flex: 1;
+    padding: 12px;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    background: rgba(255, 255, 255, 0.05);
+    color: white;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.action-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: white;
+}
+
+/* Loader */
+.loader {
+    margin-top: 30px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid rgba(255, 255, 255, 0.1);
+    border-top-color: var(--primary-light);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(40px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* Modal */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    backdrop-filter: blur(10px);
+}
+
+.modal-content {
+    padding: 40px;
+    text-align: center;
+    max-width: 400px;
+    width: 90%;
+    position: relative;
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.close-modal {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 2rem;
+    cursor: pointer;
+}
+
+#qrcode {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    margin: 25px auto;
+    width: fit-content;
+}
+
+.secondary-btn {
+    width: 100%;
+    padding: 15px;
+    border-radius: 12px;
+    background: white;
+    color: black;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    margin-top: 15px;
+}
+
+/* Toast */
+.toast {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--gradient-main);
+    padding: 12px 30px;
+    border-radius: 50px;
+    font-weight: 600;
+    z-index: 2000;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    animation: toastIn 0.3s ease-out;
+}
+
+@keyframes toastIn {
+    from {
+        bottom: 0;
+        opacity: 0;
+    }
+
+    to {
+        bottom: 30px;
+        opacity: 1;
+    }
+}
+
+/* History List */
+.history-container {
+    margin-top: 40px;
+    animation: fadeIn 1s ease-out;
+}
+
+.history-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.text-btn {
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: var(--transition);
+}
+
+.text-btn:hover {
+    color: var(--secondary);
+}
+
+.history-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.history-item {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border-color);
+    padding: 15px 20px;
+    border-radius: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.history-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    overflow: hidden;
+}
+
+.history-original {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Service Status Styles */
+.status-container {
+    margin-top: 60px;
+    margin-bottom: 40px;
+}
+
+.status-summary {
+    display: flex;
+    justify-content: space-around;
+    padding: 20px;
+    margin-bottom: 30px;
+}
+
+.summary-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+}
+
+.summary-label {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+}
+
+.summary-value {
+    font-size: 1.5rem;
+    font-weight: 800;
+}
+
+.summary-value.success {
+    color: var(--success);
+}
+
+.summary-value.error {
+    color: var(--error);
+}
+
+.status-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 15px;
+}
+
+.status-tag {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 12px 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    transition: var(--transition);
+}
+
+.status-tag:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.tag-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.tag-name {
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.tag-indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+
+.tag-indicator.working {
+    background: var(--success);
+    box-shadow: 0 0 10px var(--success);
+}
+
+.tag-indicator.no-connection {
+    background: var(--error);
+    box-shadow: 0 0 10px var(--error);
+}
+
+.tag-indicator.checking {
+    background: var(--warning);
+    box-shadow: 0 0 10px var(--warning);
+    animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        opacity: 0.5;
+    }
+
+    50% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0.5;
+    }
+}
+
+.tag-metadata {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
+.meta-pill {
+    font-size: 0.65rem;
+    padding: 2px 6px;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text-dim);
+}
+
+.meta-pill.auth {
+    background: rgba(253, 29, 29, 0.2);
+    color: #ff6b6b;
+}
+
+.meta-pill.cors {
+    background: rgba(0, 255, 136, 0.2);
+    color: #00ff88;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    .glitch-text {
+        font-size: 2.5rem;
+    }
+
+    .input-group {
+        flex-direction: column;
+    }
+
+    .primary-btn {
+        width: 100%;
+    }
+
+    .status-summary {
+        flex-direction: column;
+        gap: 15px;
+    }
+}
+</style>
+<body>
+    <div class="blob-container">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+
+    <main class="container">
+        <header class="hero">
+            <h1 class="glitch-text" data-text="ULTIMATE  URL">ULTIMATE URL</h1>
+            <p class="subtitle">Shorten. Track. Share. Using the world's best APIs in one place.</p>
+        </header>
+
+        <section class="input-card glass">
+            <div class="service-selection">
+                <span class="selection-label">Select Service:</span>
+                <select id="serviceSelect" class="glass-select">
+                    <option value="best">✨ Best (Recommended)</option>
+                    <option value="auto">🚀 Auto (Try All)</option>
+                    <option value="1pt">1pt</option>
+                    <option value="Spoo.me">Spoo.me</option>
+                    <option value="GoTiny">GoTiny</option>
+                    <option value="CleanURI">CleanURI</option>
+                    <option value="Ulvis">Ulvis</option>
+                    <option value="TinyURL">TinyURL</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <input type="url" id="urlInput" placeholder="Paste your long URL here... (With http:// or https://)" autocomplete="off">
+                <button id="shortenBtn" class="primary-btn">
+                    <span>Shorten Now</span>
+                    <div class="btn-glow"></div>
+                </button>
+            </div>
+            <div id="loader" class="loader hidden">
+                <div class="spinner"></div>
+                <p>Generating magic links...</p>
+            </div>
+        </section>
+
+        <section id="resultsSection" class="results-container hidden">
+            <h2 class="section-title">Your Shortened Links</h2>
+            <div id="resultsGrid" class="results-grid">
+                <!-- Results will be injected here -->
+            </div>
+        </section>
+
+        <section id="historySection" class="history-container hidden">
+            <div class="history-header">
+                <h2 class="section-title">Recent History</h2>
+                <button id="clearHistory" class="text-btn">Clear All</button>
+            </div>
+            <div id="historyList" class="history-list">
+                <!-- History items will be injected here -->
+            </div>
+        </section>
+
+        <section id="statusSection" class="status-container">
+            <h2 class="section-title">Service Status</h2>
+            <div class="status-summary glass">
+                <div class="summary-item">
+                    <span class="summary-label">Total Services:</span>
+                    <span id="totalServices" class="summary-value">0</span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">Working:</span>
+                    <span id="workingServices" class="summary-value success">0</span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">Issues:</span>
+                    <span id="failingServices" class="summary-value error">0</span>
+                </div>
+            </div>
+            <div id="statusGrid" class="status-grid">
+                <!-- Status tags will be injected here -->
+            </div>
+        </section>
+    </main>
+
+    <div id="qrModal" class="modal hidden">
+        <div class="modal-content glass">
+            <button class="close-modal">&times;</button>
+            <h3>QR Code Generated</h3>
+            <div id="qrcode"></div>
+            <p id="qrLinkText"></p>
+            <button id="downloadQr" class="secondary-btn">Download Image</button>
+        </div>
+    </div>
+
+    <div id="toast" class="toast hidden">Copied to clipboard!</div>
+
+    <script>
+class UltimateShortener {
+    constructor() {
+        this.urlInput = document.getElementById('urlInput');
+        this.shortenBtn = document.getElementById('shortenBtn');
+        this.resultsGrid = document.getElementById('resultsGrid');
+        this.resultsSection = document.getElementById('resultsSection');
+        this.historySection = document.getElementById('historySection');
+        this.historyList = document.getElementById('historyList');
+        this.loader = document.getElementById('loader');
+        this.clearHistoryBtn = document.getElementById('clearHistory');
+        this.serviceSelect = document.getElementById('serviceSelect');
+        this.statusGrid = document.getElementById('statusGrid');
+
+        // Total stats
+        this.totalServicesEl = document.getElementById('totalServices');
+        this.workingServicesEl = document.getElementById('workingServices');
+        this.failingServicesEl = document.getElementById('failingServices');
+
+        this.allApis = [
+            { id: '1pt', name: '1pt', desc: 'A simple URL shortener', auth: 'No', https: 'Yes', cors: 'Yes', url: 'https://1pt.co' },
+            { id: 'bitly', name: 'Bitly', desc: 'URL shortener and link management', auth: 'OAuth', https: 'Yes', cors: 'Unknown', url: 'https://bitly.com' },
+            { id: 'cleanuri', name: 'CleanURI', desc: 'URL shortener service', auth: 'No', https: 'Yes', cors: 'Yes', url: 'https://cleanuri.com' },
+            { id: 'clickmeter', name: 'ClickMeter', desc: 'Monitor, compare and optimize links', auth: 'apiKey', https: 'Yes', cors: 'Unknown', url: 'https://clickmeter.com' },
+            { id: 'clico', name: 'Clico', desc: 'URL shortener service', auth: 'apiKey', https: 'Yes', cors: 'Unknown', url: 'https://clico.me' },
+            { id: 'cuttly', name: 'Cutt.ly', desc: 'URL shortener service', auth: 'apiKey', https: 'Yes', cors: 'Unknown', url: 'https://cutt.ly' },
+            { id: 'drivet', name: 'Drivet', desc: 'Shorten a long URL easily and fast', auth: 'No', https: 'Yes', cors: 'Unknown', url: 'https://drivet.co' },
+            { id: 'free-url-shortener', name: 'Free Url Shortener', desc: 'Powerful API to interact with other sites', auth: 'No', https: 'Yes', cors: 'Unknown', url: 'https://free-url-shortener.rb.gd' },
+            { id: 'gitio', name: 'Git.io', desc: 'Git.io URL shortener', auth: 'No', https: 'Yes', cors: 'Unknown', url: 'https://git.io' },
+            { id: 'gotiny', name: 'GoTiny', desc: 'Lightweight URL shortener', auth: 'No', https: 'Yes', cors: 'Yes', url: 'https://gotiny.cc' },
+            { id: 'kutt', name: 'Kutt', desc: 'Free Modern URL Shortener', auth: 'apiKey', https: 'Yes', cors: 'Yes', url: 'https://kutt.it' },
+            { id: 'mgnet', name: 'Mgnet.me', desc: 'Torrent URL shorten API', auth: 'No', https: 'Yes', cors: 'No', url: 'http://mgnet.me' },
+            { id: 'owo', name: 'owo', desc: 'Simple link obfuscator/shortener', auth: 'No', https: 'Yes', cors: 'Unknown', url: 'https://owo.whats-th.is' },
+            { id: 'rebrandly', name: 'Rebrandly', desc: 'Custom URL shortener for branded links', auth: 'apiKey', https: 'Yes', cors: 'Unknown', url: 'https://rebrandly.com' },
+            { id: 'shortlink', name: 'Short Link', desc: 'Short URLs support many domains', auth: 'No', https: 'Yes', cors: 'Unknown', url: 'https://shortlink.is' },
+            { id: 'shrtcode', name: 'Shrtcode', desc: 'URl Shortener with multiple Domains', auth: 'No', https: 'Yes', cors: 'Yes', url: 'https://shrtco.de' },
+            { id: 'shrtlnk', name: 'Shrtlnk', desc: 'Simple and efficient short link creation', auth: 'apiKey', https: 'Yes', cors: 'Yes', url: 'https://shrtlnk.dev' },
+            { id: 'tinyurl', name: 'TinyURL', desc: 'Shorten long URLs', auth: 'apiKey', https: 'Yes', cors: 'No', url: 'https://tinyurl.com' },
+            { id: 'urlbae', name: 'UrlBae', desc: 'Simple and efficient short link creation', auth: 'apiKey', https: 'Yes', cors: 'Yes', url: 'https://urlbae.com' },
+            { id: 'bly', name: 'Bly.to', desc: 'Analytics and tracking capabilities', auth: 'apiKey', https: 'Yes', cors: 'Yes', url: 'https://bly.to' },
+            { id: 'manyapis', name: 'Manyapis.com', desc: 'Up to 50 requests per day', auth: 'OAuth', https: 'Yes', cors: 'Yes', url: 'https://manyapis.com' },
+            { id: 'ogli', name: 'Ogli', desc: 'Custom OG/meta tags previews', auth: 'apiKey', https: 'Yes', cors: 'Yes', url: 'https://ogli.me' },
+            { id: 'spoome', name: 'Spoo.me', desc: 'Custom alias, password protection', auth: 'No', https: 'Yes', cors: 'Yes', url: 'https://spoo.me' },
+            { id: 'tly', name: 'T.LY', desc: 'Link management service', auth: 'apiKey', https: 'Yes', cors: 'Yes', url: 'https://t.ly' },
+            { id: 'urlmskr', name: 'Urlmskr', desc: 'Easy and fast masked link creation', auth: 'No', https: 'Yes', cors: 'Unknown', url: 'https://urlmskr.com' }
+        ];
+
+        this.allApis.forEach(api => api.status = 'checking');
+
+        this.providers = [
+            { name: '1pt', fetch: this.shorten1pt.bind(this) },
+            { name: 'Spoo.me', fetch: this.shortenSpoo.bind(this) },
+            { name: 'GoTiny', fetch: this.shortenGoTiny.bind(this) },
+            { name: 'CleanURI', fetch: this.shortenCleanUri.bind(this) },
+            { name: 'Ulvis', fetch: this.shortenUlvis.bind(this) },
+            { name: 'TinyURL', fetch: this.shortenTinyUrl.bind(this) }
+        ];
+
+        this.init();
+    }
+
+    init() {
+        this.shortenBtn.addEventListener('click', () => this.handleShorten());
+        this.clearHistoryBtn.addEventListener('click', () => this.clearHistory());
+        this.loadHistory();
+        this.renderStatusGrid();
+        this.populateDropdown();
+        this.checkAllStatuses();
+
+        // Modal logic
+        document.querySelector('.close-modal').onclick = () => document.getElementById('qrModal').classList.add('hidden');
+        window.onclick = (e) => {
+            if (e.target.id === 'qrModal') document.getElementById('qrModal').classList.add('hidden');
+        };
+    }
+
+    populateDropdown() {
+        // Clear existing except special options (Best, Auto)
+        const specialOptions = Array.from(this.serviceSelect.options).filter(o => o.value === 'best' || o.value === 'auto');
+        this.serviceSelect.innerHTML = '';
+        specialOptions.forEach(opt => this.serviceSelect.add(opt));
+
+        // Add ALL APIs to the dropdown as requested
+        this.allApis.forEach(api => {
+            const option = document.createElement('option');
+            option.value = api.name;
+            option.text = api.name;
+            this.serviceSelect.add(option);
+        });
+    }
+
+    async checkAllStatuses() {
+        // Parallel check with staggered timing
+        const checks = this.allApis.map(async (api, index) => {
+            return new Promise(resolve => {
+                setTimeout(async () => {
+                    try {
+                        // Use no-cors for checking reachability
+                        const controller = new AbortController();
+                        const id = setTimeout(() => controller.abort(), 8000);
+
+                        const res = await fetch(api.url, { mode: 'no-cors', signal: controller.signal });
+                        api.status = 'working';
+                    } catch (e) {
+                        api.status = 'no-connection';
+                    }
+                    this.renderStatusGrid();
+                    resolve();
+                }, index * 100);
+            });
+        });
+        await Promise.allSettled(checks);
+    }
+
+    renderStatusGrid() {
+        this.statusGrid.innerHTML = '';
+        let workingCount = 0;
+        let failingCount = 0;
+
+        this.allApis.forEach(api => {
+            if (api.status === 'working') workingCount++;
+            else if (api.status === 'no-connection') failingCount++;
+
+            const tag = document.createElement('div');
+            tag.className = 'status-tag';
+            tag.title = api.desc;
+            tag.innerHTML = `
+                <div class="tag-header">
+                    <span class="tag-name">${api.name}</span>
+                    <div class="tag-indicator ${api.status}"></div>
+                </div>
+                <div class="tag-status-text ${api.status}">${api.status.replace('-', ' ')}</div>
+                <div class="tag-metadata">
+                    <span class="meta-pill ${api.auth !== 'No' ? 'auth' : ''}">${api.auth === 'No' ? 'Free' : api.auth}</span>
+                    ${api.cors === 'Yes' ? '<span class="meta-pill cors">CORS</span>' : ''}
+                    <span class="meta-pill">${api.https === 'Yes' ? 'HTTPS' : 'HTTP'}</span>
+                </div>
+            `;
+            this.statusGrid.appendChild(tag);
+        });
+
+        this.totalServicesEl.innerText = this.allApis.length;
+        this.workingServicesEl.innerText = workingCount;
+        this.failingServicesEl.innerText = failingCount;
+    }
+
+    async handleShorten() {
+        const url = this.urlInput.value.trim();
+        const selectedValue = this.serviceSelect.value;
+
+        if (!url) return this.showToast('Please enter a valid URL');
+        if (!this.isValidUrl(url)) return this.showToast('Invalid URL format');
+
+        this.showLoader(true);
+        this.resultsGrid.innerHTML = '';
+        this.resultsSection.classList.add('hidden');
+
+        let successCount = 0;
+
+        if (selectedValue === 'auto') {
+            const results = await Promise.allSettled(this.providers.map(p => p.fetch(url)));
+            results.forEach((res, index) => {
+                if (res.status === 'fulfilled' && res.value) {
+                    this.renderResult(this.providers[index].name, res.value);
+                    this.addToHistory(url, res.value, this.providers[index].name);
+                    successCount++;
+                }
+            });
+        } else if (selectedValue === 'best') {
+            for (const provider of this.providers) {
+                const shortUrl = await provider.fetch(url);
+                if (shortUrl) {
+                    this.renderResult(`Recommended: ${provider.name}`, shortUrl);
+                    this.addToHistory(url, shortUrl, provider.name);
+                    successCount++;
+                    break;
+                }
+            }
+        } else {
+            const provider = this.providers.find(p => p.name.toLowerCase() === selectedValue.toLowerCase() || p.name === selectedValue);
+            if (provider) {
+                try {
+                    const shortUrl = await provider.fetch(url);
+                    if (shortUrl) {
+                        this.renderResult(provider.name, shortUrl);
+                        this.addToHistory(url, shortUrl, provider.name);
+                        successCount++;
+                    }
+                } catch (e) {
+                    console.error(`Failed to shorten with ${provider.name}:`, e);
+                }
+            }
+        }
+
+        this.showLoader(false);
+
+        if (successCount > 0) {
+            this.resultsSection.classList.remove('hidden');
+        } else {
+            this.showToast('Selected service failed. Try another or check status below.');
+        }
+    }
+
+    async shorten1pt(url) {
+        try {
+            const res = await fetch(`https://1pt.co/api/short?url=${encodeURIComponent(url)}`);
+            const data = await res.json();
+            return `https://1pt.co/${data.short}`;
+        } catch (e) { return null; }
+    }
+
+    async shortenSpoo(url) {
+        try {
+            const res = await fetch('https://spoo.me/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'Accept': 'application/json' },
+                body: `url=${encodeURIComponent(url)}`
+            });
+            const data = await res.json();
+            return data.short_url;
+        } catch (e) { return null; }
+    }
+
+    async shortenGoTiny(url) {
+        try {
+            const res = await fetch('https://gotiny.cc/api', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ input: url })
+            });
+            const data = await res.json();
+            return `https://gotiny.cc/${data[0].code}`;
+        } catch (e) { return null; }
+    }
+
+    async shortenCleanUri(url) {
+        try {
+            const res = await fetch('https://cleanuri.com/api/v1/shorten', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `url=${encodeURIComponent(url)}`
+            });
+            const data = await res.json();
+            return data.result_url;
+        } catch (e) { return null; }
+    }
+
+    async shortenUlvis(url) {
+        try {
+            const res = await fetch(`https://ulvis.net/api.php?url=${encodeURIComponent(url)}&private=1`);
+            const text = await res.text();
+            return text.startsWith('http') ? text : null;
+        } catch (e) { return null; }
+    }
+
+    async shortenTinyUrl(url) {
+        try {
+            const res = await fetch(`https://tinyurl.com/api-create.php?url=${encodeURIComponent(url)}`);
+            const text = await res.text();
+            return text.startsWith('http') ? text : null;
+        } catch (e) { return null; }
+    }
+
+    renderResult(provider, shortUrl) {
+        const card = document.createElement('div');
+        card.className = 'result-card glass';
+        card.innerHTML = `
+            <span class="provider-badge">${provider}</span>
+            <div class="short-url">${shortUrl}</div>
+            <div class="actions">
+                <button class="action-btn copy-btn" data-url="${shortUrl}">Copy</button>
+                <button class="action-btn qr-btn" data-url="${shortUrl}">QR</button>
+            </div>
+        `;
+        this.resultsGrid.appendChild(card);
+
+        card.querySelector('.copy-btn').onclick = () => this.copyToClipboard(shortUrl);
+        card.querySelector('.qr-btn').onclick = () => this.showQR(shortUrl);
+    }
+
+    addToHistory(longUrl, shortUrl, provider) {
+        let history = JSON.parse(localStorage.getItem('shortenerHistory') || '[]');
+        if (history.some(h => h.shortUrl === shortUrl)) return;
+
+        history.unshift({ longUrl, shortUrl, provider, date: new Date().getTime() });
+        history = history.slice(0, 10);
+        localStorage.setItem('shortenerHistory', JSON.stringify(history));
+        this.loadHistory();
+    }
+
+    loadHistory() {
+        const history = JSON.parse(localStorage.getItem('shortenerHistory') || '[]');
+        if (history.length === 0) {
+            this.historySection.classList.add('hidden');
+            return;
+        }
+
+        this.historySection.classList.remove('hidden');
+        this.historyList.innerHTML = '';
+
+        history.forEach(item => {
+            const div = document.createElement('div');
+            div.className = 'history-item';
+            div.innerHTML = `
+                <div class="history-info">
+                    <span class="short-url" style="font-size: 1rem; cursor: pointer;" onclick="window.open('${item.shortUrl}', '_blank')">${item.shortUrl}</span>
+                    <span class="history-original">${item.longUrl}</span>
+                </div>
+                <button class="action-btn" style="width: auto; padding: 8px 15px;" onclick="navigator.clipboard.writeText('${item.shortUrl}').then(() => alert('Copied!'))">Copy</button>
+            `;
+            this.historyList.appendChild(div);
+        });
+    }
+
+    clearHistory() {
+        localStorage.removeItem('shortenerHistory');
+        this.loadHistory();
+    }
+
+    async copyToClipboard(text) {
+        try {
+            await navigator.clipboard.writeText(text);
+            this.showToast('Copied to clipboard!');
+        } catch (err) {
+            this.showToast('Failed to copy');
+        }
+    }
+
+    showQR(url) {
+        const modal = document.getElementById('qrModal');
+        const qrContainer = document.getElementById('qrcode');
+        qrContainer.innerHTML = '';
+        new QRCode(qrContainer, {
+            text: url,
+            width: 200,
+            height: 200,
+            colorDark: "#000000",
+            colorLight: "#ffffff",
+            correctLevel: QRCode.CorrectLevel.H
+        });
+        document.getElementById('qrLinkText').innerText = url;
+        modal.classList.remove('hidden');
+        document.getElementById('downloadQr').onclick = () => {
+            const canvas = qrContainer.querySelector('canvas');
+            const link = document.createElement('a');
+            link.download = 'short-url-qr.png';
+            link.href = canvas.toDataURL();
+            link.click();
+        };
+    }
+
+    showToast(msg) {
+        const toast = document.getElementById('toast');
+        toast.innerText = msg;
+        toast.classList.remove('hidden');
+        setTimeout(() => toast.classList.add('hidden'), 3000);
+    }
+
+    showLoader(show) {
+        this.loader.classList.toggle('hidden', !show);
+        this.shortenBtn.disabled = show;
+    }
+
+    isValidUrl(string) {
+        try {
+            new URL(string);
+            return true;
+        } catch (_) {
+            return false;
+        }
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    new UltimateShortener();
+});
+
+</script>
+</body>
+
+</html>

@@ -33,6 +33,10 @@
       from { background-position:-800px 0; }
       to   { background-position: 800px 0; }
     }
+    @keyframes chipIn {
+      from { opacity:0; transform:scale(.85); }
+      to   { opacity:1; transform:scale(1); }
+    }
 
     body {
       font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
@@ -72,14 +76,12 @@
       border-radius: 26px 26px 0 0; pointer-events: none;
     }
 
-    /* Header */
+    /* ── Header ── */
     .header {
       display: flex; align-items: center; justify-content: space-between;
       margin-bottom: 28px; gap: 16px;
     }
-
     .brand { display:flex; align-items:center; gap:14px; }
-
     .brand-logo {
       width:44px; height:44px; border-radius:14px;
       background: conic-gradient(from 160deg, #3b82f6, #a855f7, #f97316, #3b82f6);
@@ -93,14 +95,12 @@
       opacity:.3; filter:blur(10px); z-index:-1;
     }
     .brand-logo span { font-size:21px; font-weight:800; color:#0b1020; }
-
     .brand-text h1 {
       font-size:22px; font-weight:800; letter-spacing:.07em; text-transform:uppercase;
       background: linear-gradient(135deg,#fff 0%,#93c5fd 100%);
       -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
     }
     .brand-text p { font-size:11.5px; color:var(--muted); margin-top:2px; }
-
     .pill {
       font-size:11px; padding:6px 14px; border-radius:999px;
       border:1px solid rgba(148,163,184,.2);
@@ -108,11 +108,15 @@
       color:var(--muted); font-weight:600; letter-spacing:.03em; white-space:nowrap;
     }
 
-    /* Search */
-    .search-wrap { margin-bottom:22px; }
+    /* ── Search ── */
+    .search-wrap { margin-bottom:8px; position:relative; }
+
+    .search-box {
+      position: relative;
+    }
 
     #search {
-      width:100%; padding:12px 18px 12px 44px;
+      width:100%; padding:12px 44px 12px 44px;
       background: rgba(17,24,39,.9);
       border:1px solid var(--border); border-radius:14px;
       color:var(--text); font-size:.9rem; outline:none;
@@ -123,9 +127,59 @@
     #search:focus { border-color:var(--accent); box-shadow:0 0 0 3px rgba(59,130,246,.15); }
     #search::placeholder { color:var(--muted); }
 
-    #stats { font-size:11px; color:var(--muted); text-align:right; margin-bottom:14px; min-height:16px; }
+    /* keyboard shortcut hint inside search */
+    .search-hint {
+      position:absolute; right:14px; top:50%; transform:translateY(-50%);
+      font-size:10px; color:var(--muted);
+      background:rgba(30,41,59,.9); border:1px solid rgba(148,163,184,.2);
+      padding:2px 7px; border-radius:6px; pointer-events:none;
+      transition: opacity .2s;
+      font-family: monospace;
+    }
+    #search:focus + .search-hint { opacity:0; }
 
-    /* Grid */
+    /* clear button */
+    #clear-btn {
+      position:absolute; right:14px; top:50%; transform:translateY(-50%);
+      background:none; border:none; color:var(--muted); cursor:pointer;
+      font-size:16px; display:none; padding:0 2px;
+      transition: color .2s;
+    }
+    #clear-btn:hover { color:var(--text); }
+    #clear-btn.visible { display:block; }
+    #clear-btn.visible ~ .search-hint { display:none; }
+
+    /* ── Recent searches ── */
+    #recents-wrap {
+      margin-bottom:16px; min-height:0;
+      display:none;
+    }
+    #recents-wrap.visible { display:block; }
+    .recents-label {
+      font-size:10px; color:var(--muted); letter-spacing:.06em;
+      text-transform:uppercase; font-weight:600; margin-bottom:7px;
+    }
+    .recents-chips { display:flex; flex-wrap:wrap; gap:7px; }
+    .chip {
+      font-size:11.5px; padding:4px 12px; border-radius:999px;
+      border:1px solid rgba(59,130,246,.35);
+      background:rgba(37,99,235,.1);
+      color:#93c5fd; cursor:pointer;
+      transition: background .2s, border-color .2s;
+      animation: chipIn .2s ease both;
+    }
+    .chip:hover { background:rgba(37,99,235,.25); border-color:rgba(59,130,246,.7); }
+
+    /* ── Stats bar ── */
+    #stats {
+      font-size:11px; color:var(--muted);
+      margin-bottom:14px; min-height:16px;
+      display:flex; align-items:center; justify-content:space-between;
+    }
+    #stats-text { transition: opacity .2s; }
+    #stats-count { color:#60a5fa; font-weight:600; }
+
+    /* ── Grid ── */
     .grid {
       display:grid;
       grid-template-columns: repeat(3, minmax(0,1fr));
@@ -146,7 +200,7 @@
       border:1px solid var(--border);
     }
 
-    /* Card */
+    /* ── Card ── */
     .app-card {
       background: linear-gradient(135deg, rgba(17,24,39,.96) 0%, rgba(30,41,59,.8) 100%);
       border-radius:18px; border:1px solid var(--border);
@@ -183,6 +237,9 @@
     .app-text h2 { font-size:14.5px; font-weight:700; margin-bottom:4px; }
     .app-text p  { font-size:11.5px; color:var(--muted); line-height:1.55; }
 
+    /* highlight matched text */
+    .hl { color:#fff; background:rgba(59,130,246,.3); border-radius:3px; padding:0 2px; font-weight:700; }
+
     .badge-row { margin-top:7px; }
     .badge {
       font-size:9.5px; padding:3px 9px; border-radius:999px;
@@ -212,14 +269,20 @@
       box-shadow:0 4px 14px rgba(59,130,246,.28);
     }
 
-    /* State */
+    /* ── States ── */
     .state {
       grid-column:1/-1; text-align:center;
       padding:70px 20px; color:var(--muted); font-size:.95rem;
     }
     .state-icon { font-size:2.8rem; display:block; margin-bottom:14px; }
+    .state-suggestion {
+      margin-top:12px; font-size:.82rem; color:rgba(148,163,184,.6);
+    }
+    .state-suggestion span {
+      color:#60a5fa; cursor:pointer; text-decoration:underline;
+    }
 
-    /* Footer */
+    /* ── Footer ── */
     .footer-credit {
       margin-top:26px; padding-top:20px;
       border-top:1px solid rgba(148,163,184,.15);
@@ -260,10 +323,23 @@
   </header>
 
   <div class="search-wrap">
-    <input type="text" id="search" placeholder="Search tools by name or description…">
+    <div class="search-box">
+      <input type="text" id="search" placeholder="Search tools… (press / to focus)">
+      <button id="clear-btn" title="Clear search">&#10005;</button>
+      <span class="search-hint">/</span>
+    </div>
   </div>
 
-  <div id="stats"></div>
+  <!-- Recent searches -->
+  <div id="recents-wrap">
+    <div class="recents-label">Recent searches</div>
+    <div class="recents-chips" id="recents-chips"></div>
+  </div>
+
+  <!-- Stats -->
+  <div id="stats">
+    <span id="stats-text"></span>
+  </div>
 
   <div class="grid" id="grid">
     <div class="skeleton"></div>
@@ -304,8 +380,11 @@
     '🔔','🎵','📦','🧲','🖱️','🧪','🛡️','🗺️','🎲','📡'
   ];
 
-  var allCards = [];
+  var allCards   = [];
+  var recentList = [];   // in-memory recent searches (max 5)
+  var debounceTimer = null;
 
+  /* ── Helpers ── */
   function escHtml(str) {
     return String(str)
       .replace(/&/g,'&amp;')
@@ -314,37 +393,127 @@
       .replace(/"/g,'&quot;');
   }
 
+  /* Highlight occurrences of `q` inside `text` (case-insensitive) */
+  function highlight(text, q) {
+    if (!q) return escHtml(text);
+    var safe = escHtml(text);
+    var safeQ = escHtml(q).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    try {
+      var re = new RegExp('(' + safeQ + ')', 'gi');
+      return safe.replace(re, '<span class="hl">$1</span>');
+    } catch(e) {
+      return safe;
+    }
+  }
+
+  /* Simple fuzzy score: returns a score >= 0 (higher = better match), -1 = no match */
+  function fuzzyScore(text, query) {
+    text  = text.toLowerCase();
+    query = query.toLowerCase();
+
+    /* exact substring — best score */
+    if (text.indexOf(query) !== -1) return 100;
+
+    /* all characters of query appear in order in text */
+    var ti = 0, qi = 0, score = 0;
+    while (ti < text.length && qi < query.length) {
+      if (text[ti] === query[qi]) { score++; qi++; }
+      ti++;
+    }
+    if (qi === query.length) return score;
+
+    /* allow 1 typo: try removing each char from query and check substring */
+    if (query.length > 2) {
+      for (var i = 0; i < query.length; i++) {
+        var variant = query.slice(0, i) + query.slice(i + 1);
+        if (text.indexOf(variant) !== -1) return 50;
+      }
+    }
+
+    return -1; /* no match */
+  }
+
+  /* ── Recent searches ── */
+  function addRecent(q) {
+    if (!q || q.length < 2) return;
+    /* remove duplicate */
+    for (var i = recentList.length - 1; i >= 0; i--) {
+      if (recentList[i].toLowerCase() === q.toLowerCase()) recentList.splice(i, 1);
+    }
+    recentList.unshift(q);
+    if (recentList.length > 5) recentList.length = 5;
+  }
+
+  function renderRecents() {
+    var wrap   = document.getElementById('recents-wrap');
+    var chips  = document.getElementById('recents-chips');
+    var search = document.getElementById('search');
+
+    if (!recentList.length || search.value.trim() !== '') {
+      wrap.classList.remove('visible');
+      return;
+    }
+
+    chips.innerHTML = '';
+    for (var i = 0; i < recentList.length; i++) {
+      (function(term) {
+        var chip = document.createElement('span');
+        chip.className = 'chip';
+        chip.textContent = term;
+        chip.addEventListener('click', function() {
+          search.value = term;
+          wrap.classList.remove('visible');
+          doSearch(term);
+        });
+        chips.appendChild(chip);
+      })(recentList[i]);
+    }
+    wrap.classList.add('visible');
+  }
+
+  /* ── Stats bar ── */
+  function updateStats(shown, total, q) {
+    var el = document.getElementById('stats-text');
+    if (!q) {
+      el.innerHTML = '<span id="stats-count">' + total + '</span> tool' + (total !== 1 ? 's' : '') + ' loaded';
+    } else {
+      el.innerHTML = 'Showing <span id="stats-count">' + shown + '</span> of ' + total + ' tools';
+    }
+  }
+
+  /* ── Fetch meta ── */
   function fetchMeta(url, cb) {
     var xhr = new XMLHttpRequest();
     xhr.open('GET', url, true);
     xhr.onload = function() {
       if (xhr.status >= 200 && xhr.status < 300) {
         var parser = new DOMParser();
-        var doc = parser.parseFromString(xhr.responseText, 'text/html');
+        var doc    = parser.parseFromString(xhr.responseText, 'text/html');
         var titleEl = doc.querySelector('title');
         var descEl  = doc.querySelector('meta[name="description"]');
         var title = titleEl ? titleEl.textContent.trim() : '';
-        var desc  = descEl  ? (descEl.getAttribute('content') || '').trim() : 'No description provided.';
+        var desc  = descEl  ? (descEl.getAttribute('content') || '').trim() : '';
         if (!desc) desc = 'No description provided.';
         cb(title, desc);
-      } else {
-        cb('', 'Could not load description.');
-      }
+      } else { cb('', 'Could not load description.'); }
     };
     xhr.onerror = function() { cb('', 'Could not load description.'); };
     xhr.send();
   }
 
-  function makeCard(card, index) {
+  /* ── Build card HTML ── */
+  function makeCard(card, index, q) {
     var article = document.createElement('article');
     article.className = 'app-card';
-    article.style.animationDelay = (index * 60) + 'ms';
+    article.style.animationDelay = (index * 55) + 'ms';
+    var nameHtml = q ? highlight(card.name, q) : escHtml(card.name);
+    var descHtml = q ? highlight(card.desc, q) : escHtml(card.desc);
     article.innerHTML =
       '<div class="app-main">' +
         '<div class="app-icon">' + card.icon + '</div>' +
         '<div class="app-text">' +
-          '<h2>' + escHtml(card.name) + '</h2>' +
-          '<p>' + escHtml(card.desc) + '</p>' +
+          '<h2>' + nameHtml + '</h2>' +
+          '<p>' + descHtml + '</p>' +
           '<div class="badge-row"><span class="badge">Live</span></div>' +
         '</div>' +
       '</div>' +
@@ -354,21 +523,92 @@
     return article;
   }
 
-  function render(cards) {
+  /* ── Find closest match for empty-state suggestion ── */
+  function findClosest(q) {
+    var best = null, bestScore = -1;
+    for (var i = 0; i < allCards.length; i++) {
+      var s = Math.max(
+        fuzzyScore(allCards[i].name, q),
+        fuzzyScore(allCards[i].desc, q)
+      );
+      if (s > bestScore) { bestScore = s; best = allCards[i]; }
+    }
+    return bestScore > 0 ? best : null;
+  }
+
+  /* ── Render results ── */
+  function render(cards, q) {
     var grid = document.getElementById('grid');
     grid.innerHTML = '';
+
     if (!cards.length) {
-      grid.innerHTML = '<div class="state"><span class="state-icon">&#128270;</span>No tools match your search.</div>';
+      var closest = q ? findClosest(q) : null;
+      var suggestion = '';
+      if (closest) {
+        suggestion = '<div class="state-suggestion">Did you mean: ' +
+          '<span id="suggest-link">' + escHtml(closest.name) + '</span>?</div>';
+      }
+      grid.innerHTML =
+        '<div class="state">' +
+          '<span class="state-icon">&#128270;</span>' +
+          'No tools match &ldquo;' + escHtml(q || '') + '&rdquo;.' +
+          suggestion +
+        '</div>';
+
+      if (closest) {
+        var link = document.getElementById('suggest-link');
+        if (link) {
+          link.addEventListener('click', function() {
+            document.getElementById('search').value = closest.name;
+            doSearch(closest.name);
+          });
+        }
+      }
       return;
     }
+
     for (var i = 0; i < cards.length; i++) {
-      grid.appendChild(makeCard(cards[i], i));
+      grid.appendChild(makeCard(cards[i], i, q));
     }
   }
 
+  /* ── Core search logic ── */
+  function doSearch(q) {
+    q = (q || '').trim();
+
+    /* show/hide clear btn */
+    var clearBtn = document.getElementById('clear-btn');
+    if (q) { clearBtn.classList.add('visible'); }
+    else   { clearBtn.classList.remove('visible'); }
+
+    if (!q) {
+      render(allCards, '');
+      updateStats(allCards.length, allCards.length, '');
+      renderRecents();
+      return;
+    }
+
+    /* fuzzy filter + sort by score */
+    var results = [];
+    for (var i = 0; i < allCards.length; i++) {
+      var score = Math.max(
+        fuzzyScore(allCards[i].name, q),
+        fuzzyScore(allCards[i].desc, q)
+      );
+      if (score >= 0) results.push({ card: allCards[i], score: score });
+    }
+    results.sort(function(a, b) { return b.score - a.score; });
+
+    var filtered = [];
+    for (var j = 0; j < results.length; j++) filtered.push(results[j].card);
+
+    render(filtered, q);
+    updateStats(filtered.length, allCards.length, q);
+  }
+
+  /* ── Load tools from GitHub API ── */
   function loadTools() {
     var pill = document.getElementById('count-pill');
-    var stats = document.getElementById('stats');
 
     var xhr = new XMLHttpRequest();
     xhr.open('GET', API_URL, true);
@@ -377,8 +617,7 @@
       if (xhr.status < 200 || xhr.status >= 300) {
         document.getElementById('grid').innerHTML =
           '<div class="state"><span class="state-icon">&#10060;</span>Failed to reach GitHub API.</div>';
-        pill.textContent = 'Error';
-        return;
+        pill.textContent = 'Error'; return;
       }
 
       var files;
@@ -397,24 +636,20 @@
       var htmlFiles = [];
       for (var i = 0; i < files.length; i++) {
         var f = files[i];
-        if (f.type === 'file' &&
-            f.name.length > 5 &&
-            f.name.slice(-5).toLowerCase() === '.html' &&
-            f.name !== 'index.html') {
+        if (f.type === 'file' && f.name.length > 5 &&
+            f.name.slice(-5).toLowerCase() === '.html' && f.name !== 'index.html') {
           htmlFiles.push(f);
         }
       }
 
       if (htmlFiles.length === 0) {
         document.getElementById('grid').innerHTML =
-          '<div class="state"><span class="state-icon">&#128237;</span>No tools yet — push a .html file to the repo!</div>';
-        pill.textContent = '0 Apps';
-        return;
+          '<div class="state"><span class="state-icon">&#128237;</span>No tools yet!</div>';
+        pill.textContent = '0 Apps'; return;
       }
 
       document.getElementById('grid').innerHTML = '';
-      var loaded = 0;
-      var total  = htmlFiles.length;
+      var loaded = 0, total = htmlFiles.length;
 
       for (var j = 0; j < total; j++) {
         (function(file, idx) {
@@ -425,9 +660,9 @@
             allCards.push({ name:name, desc:desc, url:url, icon:icon });
             loaded++;
             if (loaded === total) {
-              render(allCards);
-              stats.textContent = total + ' tool' + (total !== 1 ? 's' : '') + ' loaded';
-              pill.textContent  = total + ' Apps';
+              render(allCards, '');
+              updateStats(total, total, '');
+              pill.textContent = total + ' Apps';
             }
           });
         })(htmlFiles[j], j);
@@ -436,24 +671,62 @@
 
     xhr.onerror = function() {
       document.getElementById('grid').innerHTML =
-        '<div class="state"><span class="state-icon">&#10060;</span>Network error. Could not reach GitHub API.</div>';
+        '<div class="state"><span class="state-icon">&#10060;</span>Network error.</div>';
       pill.textContent = 'Offline';
     };
 
     xhr.send();
   }
 
+  /* ── Event listeners ── */
+
+  /* 1. Search input with 150ms debounce */
   document.getElementById('search').addEventListener('input', function() {
-    var q = this.value.toLowerCase().trim();
-    if (!q) { render(allCards); return; }
-    var filtered = [];
-    for (var i = 0; i < allCards.length; i++) {
-      if (allCards[i].name.toLowerCase().indexOf(q) !== -1 ||
-          allCards[i].desc.toLowerCase().indexOf(q) !== -1) {
-        filtered.push(allCards[i]);
+    var q = this.value;
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(function() { doSearch(q); }, 150);
+  });
+
+  /* 2. Show recents when focused and empty */
+  document.getElementById('search').addEventListener('focus', function() {
+    if (!this.value.trim()) renderRecents();
+  });
+
+  /* 3. Save to recents on blur if query is meaningful */
+  document.getElementById('search').addEventListener('blur', function() {
+    var q = this.value.trim();
+    if (q.length >= 2) addRecent(q);
+    /* hide recents after short delay to allow chip clicks */
+    setTimeout(function() {
+      document.getElementById('recents-wrap').classList.remove('visible');
+    }, 200);
+  });
+
+  /* 4. Clear button */
+  document.getElementById('clear-btn').addEventListener('click', function() {
+    var inp = document.getElementById('search');
+    inp.value = '';
+    this.classList.remove('visible');
+    doSearch('');
+    inp.focus();
+  });
+
+  /* 5. Press "/" anywhere to focus search */
+  document.addEventListener('keydown', function(e) {
+    var tag = document.activeElement ? document.activeElement.tagName : '';
+    if (e.key === '/' && tag !== 'INPUT' && tag !== 'TEXTAREA') {
+      e.preventDefault();
+      document.getElementById('search').focus();
+    }
+    /* Escape clears search */
+    if (e.key === 'Escape') {
+      var inp = document.getElementById('search');
+      if (inp.value) {
+        inp.value = '';
+        document.getElementById('clear-btn').classList.remove('visible');
+        doSearch('');
       }
     }
-    render(filtered);
   });
 
   loadTools();

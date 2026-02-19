@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Tools Hub</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #0f1117;
+      color: #e0e0e0;
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    header h1 {
+      font-size: 2.5rem;
+      background: linear-gradient(135deg, #6e8efb, #a777e3);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    header p {
+      color: #888;
+      margin-top: 8px;
+      font-size: 1rem;
+    }
+
+    #search {
+      display: block;
+      margin: 0 auto 40px;
+      padding: 12px 20px;
+      width: 100%;
+      max-width: 500px;
+      background: #1e2130;
+      border: 1px solid #2e3250;
+      border-radius: 12px;
+      color: #e0e0e0;
+      font-size: 1rem;
+      outline: none;
+    }
+
+    #search:focus {
+      border-color: #6e8efb;
+    }
+
+    #grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 20px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .card {
+      background: #1e2130;
+      border: 1px solid #2e3250;
+      border-radius: 16px;
+      padding: 24px;
+      text-decoration: none;
+      color: inherit;
+      transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      border-color: #6e8efb;
+      box-shadow: 0 8px 30px rgba(110, 142, 251, 0.15);
+    }
+
+    .card-icon {
+      font-size: 2rem;
+    }
+
+    .card h2 {
+      font-size: 1.1rem;
+      color: #ffffff;
+    }
+
+    .card p {
+      font-size: 0.875rem;
+      color: #888;
+      flex-grow: 1;
+    }
+
+    .card-date {
+      font-size: 0.75rem;
+      color: #555;
+    }
+
+    #status {
+      text-align: center;
+      color: #888;
+      margin-top: 60px;
+      font-size: 0.9rem;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 60px;
+      color: #555;
+      font-size: 1rem;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>🛠️ My Tools Hub</h1>
+  <p>All my tools in one place</p>
+</header>
+
+<input type="text" id="search" placeholder="🔍 Search tools...">
+
+<div id="grid"><div class="loading">Loading tools...</div></div>
+<div id="status"></div>
+
+<script>
+  // ⚠️ CHANGE THESE TWO VALUES:
+  const GITHUB_USERNAME = 'YOUR_USERNAME';
+  const GITHUB_REPO = 'tools';
+
+  const icons = ['🧮','📝','🎨','🔧','📊','🔍','⚙️','🗂️','🖼️','📐','🎯','🔐','📋','🌐','⏱️'];
+  let allCards = [];
+
+  async function fetchMeta(url) {
+    try {
+      const res = await fetch(url);
+      const text = await res.text();
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(text, 'text/html');
+      const title = doc.querySelector('title')?.innerText || '';
+      const desc = doc.querySelector('meta[name="description"]')?.getAttribute('content') || 'No description provided.';
+      return { title, desc };
+    } catch {
+      return { title: '', desc: 'Could not load description.' };
+    }
+  }
+
+  async function loadTools() {
+    const apiUrl = `https://api.github.com/repos/${GITHUB_USERNAME}/${GITHUB_REPO}/contents/`;
+    const grid = document.getElementById('grid');
+    const status = document.getElementById('status');
+
+    try {
+      const res = await fetch(apiUrl);
+      const files = await res.json();
+
+      const htmlFiles = files.filter(f =>
+        f.name.endsWith('.html') && f.name !== 'index.html'
+      );
+
+      if (htmlFiles.length === 0) {
+        grid.innerHTML = '<div class="loading">No tools found yet. Add some HTML files!</div>';
+        return;
+      }
+
+      grid.innerHTML = '';
+
+      const liveBase = `https://${GITHUB_USERNAME}.github.io/${GITHUB_REPO}/`;
+
+      const cardPromises = htmlFiles.map(async (file, i) => {
+        const liveUrl = liveBase + file.name;
+        const { title, desc } = await fetchMeta(liveUrl);
+        const displayName = title || file.name.replace('.html', '').replace(/-/g, ' ');
+        const date = new Date(file.name ? Date.now() : 0);
+        const icon = icons[i % icons.length];
+
+        return { displayName, desc, liveUrl, icon, fileName: file.name };
+      });
+
+      allCards = await Promise.all(cardPromises);
+      renderCards(allCards);
+      status.textContent = `${allCards.length} tool${allCards.length !== 1 ? 's' : ''} loaded`;
+
+    } catch (err) {
+      grid.innerHTML = '<div class="loading">❌ Failed to load tools. Check your username and repo name.</div>';
+      console.error(err);
+    }
+  }
+
+  function renderCards(cards) {
+    const grid = document.getElementById('grid');
+    if (cards.length === 0) {
+      grid.innerHTML = '<div class="loading">No tools match your search.</div>';
+      return;
+    }
+    grid.innerHTML = cards.map(c => `
+      <a class="card" href="${c.liveUrl}" target="_blank">
+        <div class="card-icon">${c.icon}</div>
+        <h2>${c.displayName}</h2>
+        <p>${c.desc}</p>
+      </a>
+    `).join('');
+  }
+
+  document.getElementById('search').addEventListener('input', function () {
+    const q = this.value.toLowerCase();
+    const filtered = allCards.filter(c =>
+      c.displayName.toLowerCase().includes(q) ||
+      c.desc.toLowerCase().includes(q)
+    );
+    renderCards(filtered);
+  });
+
+  loadTools();
+</script>
+
+</body>
+</html>

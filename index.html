@@ -3,338 +3,460 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Acosystem — All Simple Tools</title>
+  <title>Acosystem · App Launcher</title>
   <style>
+    :root {
+      --bg: #080b12;
+      --card: #111827;
+      --accent: #3b82f6;
+      --accent-soft: rgba(59,130,246,0.15);
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --border: #1f2937;
+    }
+
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    :root {
-      --bg: #0d0f1a;
-      --surface: #161929;
-      --border: #252840;
-      --border-hover: #6e8efb;
-      --text: #e2e4f0;
-      --muted: #6b7090;
-      --accent1: #6e8efb;
-      --accent2: #a777e3;
+    @keyframes gradientShift {
+      0%,100% { background-position: 0% 50%; }
+      50%      { background-position: 100% 50%; }
+    }
+    @keyframes glow {
+      0%,100% { box-shadow: 0 0 18px rgba(59,130,246,.65); }
+      50%      { box-shadow: 0 0 28px rgba(59,130,246,.9), 0 0 40px rgba(168,85,247,.4); }
+    }
+    @keyframes fadeUp {
+      from { opacity:0; transform:translateY(18px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+    @keyframes shimmer {
+      from { background-position:-800px 0; }
+      to   { background-position: 800px 0; }
     }
 
     body {
-      font-family: 'Segoe UI', system-ui, sans-serif;
-      background: var(--bg);
+      font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+      background: radial-gradient(ellipse at top, #1a2332, #020617 55%);
+      background-size: 200% 200%;
+      animation: gradientShift 15s ease infinite;
       color: var(--text);
       min-height: 100vh;
-      padding: 48px 20px 80px;
+      padding: 32px 20px 60px;
+      position: relative;
+      overflow-x: hidden;
     }
 
-    /* ── Header ── */
-    header {
-      text-align: center;
-      margin-bottom: 48px;
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background:
+        radial-gradient(circle at 20% 30%, rgba(59,130,246,.07) 0%, transparent 50%),
+        radial-gradient(circle at 80% 70%, rgba(168,85,247,.07) 0%, transparent 50%);
+      pointer-events: none; z-index: 0;
     }
 
-    .logo {
-      display: inline-flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 14px;
+    .shell {
+      width: 100%; max-width: 1080px; margin: 0 auto;
+      background: rgba(15,23,42,.96);
+      backdrop-filter: blur(24px);
+      border-radius: 26px;
+      border: 1px solid rgba(148,163,184,.25);
+      box-shadow: 0 24px 64px rgba(0,0,0,.85), 0 0 0 1px rgba(255,255,255,.04) inset;
+      padding: 28px 26px 30px;
+      position: relative; z-index: 1;
     }
 
-    .logo-icon {
-      font-size: 2.4rem;
-      line-height: 1;
+    .shell::before {
+      content: ''; position: absolute; top:0; left:0; right:0; height:180px;
+      background: linear-gradient(180deg, rgba(59,130,246,.05) 0%, transparent 100%);
+      border-radius: 26px 26px 0 0; pointer-events: none;
     }
 
-    header h1 {
-      font-size: 2.6rem;
-      font-weight: 700;
-      background: linear-gradient(135deg, var(--accent1), var(--accent2));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      letter-spacing: -0.5px;
+    /* Header */
+    .header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 28px; gap: 16px;
     }
 
-    header p {
-      color: var(--muted);
-      font-size: 1rem;
-      margin-top: 6px;
+    .brand { display:flex; align-items:center; gap:14px; }
+
+    .brand-logo {
+      width:44px; height:44px; border-radius:14px;
+      background: conic-gradient(from 160deg, #3b82f6, #a855f7, #f97316, #3b82f6);
+      display:flex; align-items:center; justify-content:center;
+      animation: glow 3s ease-in-out infinite;
+      position:relative; flex-shrink:0;
+    }
+    .brand-logo::after {
+      content:''; position:absolute; inset:-2px; border-radius:16px;
+      background: conic-gradient(from 160deg, #3b82f6, #a855f7, #f97316, #3b82f6);
+      opacity:.3; filter:blur(10px); z-index:-1;
+    }
+    .brand-logo span { font-size:21px; font-weight:800; color:#0b1020; }
+
+    .brand-text h1 {
+      font-size:22px; font-weight:800; letter-spacing:.07em; text-transform:uppercase;
+      background: linear-gradient(135deg,#fff 0%,#93c5fd 100%);
+      -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+    }
+    .brand-text p { font-size:11.5px; color:var(--muted); margin-top:2px; }
+
+    .pill {
+      font-size:11px; padding:6px 14px; border-radius:999px;
+      border:1px solid rgba(148,163,184,.2);
+      background:rgba(30,41,59,.8);
+      color:var(--muted); font-weight:600; letter-spacing:.03em; white-space:nowrap;
     }
 
-    /* ── Search ── */
-    .search-wrap {
-      display: flex;
-      justify-content: center;
-      margin-bottom: 40px;
-    }
+    /* Search */
+    .search-wrap { margin-bottom:22px; }
 
     #search {
-      width: 100%;
-      max-width: 520px;
-      padding: 13px 20px 13px 46px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      color: var(--text);
-      font-size: 0.95rem;
-      outline: none;
-      transition: border-color 0.2s;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%236b7090' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E");
-      background-repeat: no-repeat;
-      background-position: 14px center;
+      width:100%; padding:12px 18px 12px 44px;
+      background: rgba(17,24,39,.9);
+      border:1px solid var(--border); border-radius:14px;
+      color:var(--text); font-size:.9rem; outline:none;
+      transition: border-color .2s, box-shadow .2s;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E");
+      background-repeat:no-repeat; background-position:14px center;
+    }
+    #search:focus { border-color:var(--accent); box-shadow:0 0 0 3px rgba(59,130,246,.15); }
+    #search::placeholder { color:var(--muted); }
+
+    #stats { font-size:11px; color:var(--muted); text-align:right; margin-bottom:14px; min-height:16px; }
+
+    /* Grid */
+    .grid {
+      display:grid;
+      grid-template-columns: repeat(3, minmax(0,1fr));
+      gap:16px;
+    }
+    @media(max-width:840px) { .grid { grid-template-columns: repeat(2,1fr); } }
+    @media(max-width:520px) {
+      .grid { grid-template-columns: 1fr; }
+      .shell { padding:20px 16px 22px; }
     }
 
-    #search:focus { border-color: var(--accent1); }
-    #search::placeholder { color: var(--muted); }
-
-    /* ── Stats bar ── */
-    #stats {
-      text-align: center;
-      font-size: 0.82rem;
-      color: var(--muted);
-      margin-bottom: 28px;
-      min-height: 18px;
+    /* Skeleton */
+    .skeleton {
+      background: linear-gradient(90deg, rgba(30,41,59,.6) 25%, rgba(51,65,85,.4) 50%, rgba(30,41,59,.6) 75%);
+      background-size:800px 100%;
+      animation: shimmer 1.4s infinite;
+      border-radius:18px; height:140px;
+      border:1px solid var(--border);
     }
 
-    /* ── Grid ── */
-    #grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
-      gap: 18px;
-      max-width: 1200px;
-      margin: 0 auto;
+    /* Card */
+    .app-card {
+      background: linear-gradient(135deg, rgba(17,24,39,.96) 0%, rgba(30,41,59,.8) 100%);
+      border-radius:18px; border:1px solid var(--border);
+      padding:18px 16px 14px;
+      display:flex; flex-direction:column; gap:12px;
+      transition: transform .3s cubic-bezier(.4,0,.2,1), border-color .3s, box-shadow .3s;
+      position:relative; overflow:hidden;
+      animation: fadeUp .4s ease both;
+    }
+    .app-card::before {
+      content:''; position:absolute; top:0; left:-100%; width:100%; height:100%;
+      background:linear-gradient(90deg,transparent,rgba(255,255,255,.04),transparent);
+      transition: left .5s;
+    }
+    .app-card:hover::before { left:100%; }
+    .app-card:hover {
+      transform: translateY(-5px) scale(1.02);
+      border-color: rgba(59,130,246,.7);
+      box-shadow: 0 16px 36px rgba(0,0,0,.9), 0 0 0 1px rgba(59,130,246,.4), 0 0 20px rgba(59,130,246,.18);
     }
 
-    /* ── Card ── */
-    .card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 18px;
-      padding: 26px 22px 22px;
-      text-decoration: none;
-      color: inherit;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
-      position: relative;
-      overflow: hidden;
+    .app-main { display:flex; align-items:flex-start; gap:12px; position:relative; z-index:1; }
+
+    .app-icon {
+      width:44px; height:44px; border-radius:13px;
+      background: var(--accent-soft);
+      display:flex; align-items:center; justify-content:center; flex-shrink:0;
+      font-size:22px; line-height:1;
+      transition: transform .3s ease;
+      box-shadow:0 4px 12px rgba(0,0,0,.3);
+    }
+    .app-card:hover .app-icon { transform: rotate(-6deg) scale(1.1); }
+
+    .app-text h2 { font-size:14.5px; font-weight:700; margin-bottom:4px; }
+    .app-text p  { font-size:11.5px; color:var(--muted); line-height:1.55; }
+
+    .badge-row { margin-top:7px; }
+    .badge {
+      font-size:9.5px; padding:3px 9px; border-radius:999px;
+      border:1px solid rgba(59,130,246,.8);
+      color:#bfdbfe; background:rgba(37,99,235,.2);
+      font-weight:700; letter-spacing:.04em; text-transform:uppercase;
+      box-shadow:0 0 8px rgba(59,130,246,.2);
     }
 
-    .card::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(135deg, rgba(110,142,251,0.05), rgba(167,119,227,0.05));
-      opacity: 0;
-      transition: opacity 0.2s;
-      border-radius: inherit;
+    .app-footer a {
+      width:100%; display:inline-flex; align-items:center; justify-content:center;
+      padding:9px 0; border-radius:999px; font-size:12px; font-weight:600;
+      border:1px solid rgba(55,65,81,.9);
+      background:rgba(15,23,42,.95); color:var(--text);
+      text-decoration:none; gap:6px;
+      transition: all .3s ease; position:relative; overflow:hidden;
+    }
+    .app-footer a::before {
+      content:''; position:absolute; inset:0;
+      background:linear-gradient(135deg,rgba(59,130,246,.18),rgba(168,85,247,.18));
+      opacity:0; transition:opacity .3s;
+    }
+    .app-footer a:hover::before { opacity:1; }
+    .app-footer a:hover {
+      border-color:rgba(59,130,246,.7);
+      transform:translateY(-2px);
+      box-shadow:0 4px 14px rgba(59,130,246,.28);
     }
 
-    .card:hover {
-      transform: translateY(-5px);
-      border-color: var(--border-hover);
-      box-shadow: 0 10px 36px rgba(110,142,251,0.14);
-    }
-
-    .card:hover::before { opacity: 1; }
-
-    .card-icon {
-      font-size: 2rem;
-      line-height: 1;
-    }
-
-    .card h2 {
-      font-size: 1.05rem;
-      font-weight: 600;
-      color: #fff;
-      line-height: 1.3;
-    }
-
-    .card p {
-      font-size: 0.85rem;
-      color: var(--muted);
-      line-height: 1.55;
-      flex-grow: 1;
-    }
-
-    .card-footer {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-top: 4px;
-    }
-
-    .card-tag {
-      font-size: 0.72rem;
-      color: var(--accent1);
-      background: rgba(110,142,251,0.1);
-      padding: 3px 10px;
-      border-radius: 20px;
-      font-weight: 500;
-    }
-
-    .card-arrow {
-      color: var(--muted);
-      font-size: 1rem;
-      transition: color 0.2s, transform 0.2s;
-    }
-
-    .card:hover .card-arrow {
-      color: var(--accent1);
-      transform: translateX(3px);
-    }
-
-    /* ── Empty / loading states ── */
+    /* State */
     .state {
-      grid-column: 1 / -1;
-      text-align: center;
-      padding: 80px 20px;
-      color: var(--muted);
-      font-size: 1rem;
+      grid-column:1/-1; text-align:center;
+      padding:70px 20px; color:var(--muted); font-size:.95rem;
+    }
+    .state-icon { font-size:2.8rem; display:block; margin-bottom:14px; }
+
+    /* Footer */
+    .footer-credit {
+      margin-top:26px; padding-top:20px;
+      border-top:1px solid rgba(148,163,184,.15);
+      display:flex; align-items:center; justify-content:space-between;
+      flex-wrap:wrap; gap:10px;
+    }
+    .footer-credit p { font-size:11.5px; color:var(--muted); }
+    .footer-credit a {
+      font-size:11.5px; color:#60a5fa; text-decoration:none; font-weight:600;
+      display:inline-flex; align-items:center; gap:5px;
+      transition: color .2s, transform .2s;
+    }
+    .footer-credit a:hover { color:#93c5fd; transform:translateY(-1px); }
+
+    .shalom {
+      font-size:11px; color:rgba(148,163,184,.35); text-align:center;
+      margin-top:14px; letter-spacing:.14em; text-transform:uppercase;
     }
 
-    .state span {
-      display: block;
-      font-size: 3rem;
-      margin-bottom: 16px;
-    }
-
-    /* ── Footer ── */
-    footer {
-      text-align: center;
-      margin-top: 70px;
-      color: var(--muted);
-      font-size: 0.8rem;
-    }
-
-    footer a {
-      color: var(--accent1);
-      text-decoration: none;
-    }
+    ::-webkit-scrollbar { width:8px; }
+    ::-webkit-scrollbar-track { background:rgba(15,23,42,.5); }
+    ::-webkit-scrollbar-thumb { background:rgba(59,130,246,.4); border-radius:4px; }
+    ::-webkit-scrollbar-thumb:hover { background:rgba(59,130,246,.65); }
   </style>
 </head>
 <body>
+<div class="shell">
 
-<header>
-  <div class="logo">
-    <span class="logo-icon">🛠️</span>
-    <h1>Acosystem</h1>
+  <header class="header">
+    <div class="brand">
+      <div class="brand-logo"><span>A</span></div>
+      <div class="brand-text">
+        <h1>Acosystem</h1>
+        <p>Simple launcher for Ashish's mini-apps</p>
+      </div>
+    </div>
+    <div class="pill" id="count-pill">Loading…</div>
+  </header>
+
+  <div class="search-wrap">
+    <input type="text" id="search" placeholder="Search tools by name or description…">
   </div>
-  <p>All simple tools collected at one place</p>
-</header>
 
-<div class="search-wrap">
-  <input type="text" id="search" placeholder="Search tools...">
+  <div id="stats"></div>
+
+  <div class="grid" id="grid">
+    <div class="skeleton"></div>
+    <div class="skeleton"></div>
+    <div class="skeleton"></div>
+  </div>
+
+  <div class="footer-credit">
+    <p>All simple web apps made by</p>
+    <a href="https://ashish-apps.blogspot.com/" target="_blank" rel="noopener">
+      Ashish Apps
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+        <polyline points="15 3 21 3 21 9"/>
+        <line x1="10" y1="14" x2="21" y2="3"/>
+      </svg>
+    </a>
+    <a href="https://github.com/ashishapps-in/acosystem" target="_blank" rel="noopener">
+      GitHub Repo
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z"/>
+      </svg>
+    </a>
+  </div>
+  <p class="shalom">Shalom</p>
+
 </div>
 
-<div id="stats"></div>
-<div id="grid"><div class="state"><span>⏳</span>Loading tools...</div></div>
-
-<footer>
-  Hosted on <a href="https://github.com/ashishapps-in/acosystem" target="_blank">GitHub</a>
-  &nbsp;·&nbsp; Add a new <code>.html</code> file to the repo and it appears here automatically
-</footer>
-
 <script>
-  const USERNAME = 'ashishapps-in';
-  const REPO     = 'acosystem';
-  const BASE_URL = `https://${USERNAME}.github.io/${REPO}/`;
-  const API_URL  = `https://api.github.com/repos/${USERNAME}/${REPO}/contents/`;
+  var USERNAME = 'ashishapps-in';
+  var REPO     = 'acosystem';
+  var BASE_URL = 'https://' + USERNAME + '.github.io/' + REPO + '/';
+  var API_URL  = 'https://api.github.com/repos/' + USERNAME + '/' + REPO + '/contents/';
 
-  const ICONS = [
+  var ICONS = [
     '🔗','🧮','📝','🎨','🔧','📊','🔍','⚙️','🗂️','🖼️',
-    '📐','🎯','🔐','📋','🌐','⏱️','📌','🧩','🪄','💡'
+    '📐','🎯','🔐','📋','🌐','⏱️','📌','🧩','🪄','💡',
+    '🔔','🎵','📦','🧲','🖱️','🧪','🛡️','🗺️','🎲','📡'
   ];
 
-  let allCards = [];
+  var allCards = [];
 
-  /* Fetch <title> and <meta description> from a live HTML page */
-  async function fetchMeta(url) {
-    try {
-      const res  = await fetch(url);
-      if (!res.ok) throw new Error();
-      const html = await res.text();
-      const doc  = new DOMParser().parseFromString(html, 'text/html');
-      const title = doc.querySelector('title')?.textContent?.trim() || '';
-      const desc  = doc.querySelector('meta[name="description"]')
-                       ?.getAttribute('content')?.trim()
-                    || 'No description provided.';
-      return { title, desc };
-    } catch {
-      return { title: '', desc: 'Could not load description.' };
-    }
+  function escHtml(str) {
+    return String(str)
+      .replace(/&/g,'&amp;')
+      .replace(/</g,'&lt;')
+      .replace(/>/g,'&gt;')
+      .replace(/"/g,'&quot;');
   }
 
-  async function loadTools() {
-    const grid  = document.getElementById('grid');
-    const stats = document.getElementById('stats');
-
-    try {
-      const res   = await fetch(API_URL);
-      if (!res.ok) throw new Error('API error ' + res.status);
-      const files = await res.json();
-
-      const htmlFiles = files.filter(f =>
-        f.type === 'file' &&
-        f.name.endsWith('.html') &&
-        f.name !== 'index.html'
-      );
-
-      if (htmlFiles.length === 0) {
-        grid.innerHTML = `<div class="state"><span>📭</span>No tools yet — push a <code>.html</code> file to the repo!</div>`;
-        return;
+  function fetchMeta(url, cb) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', url, true);
+    xhr.onload = function() {
+      if (xhr.status >= 200 && xhr.status < 300) {
+        var parser = new DOMParser();
+        var doc = parser.parseFromString(xhr.responseText, 'text/html');
+        var titleEl = doc.querySelector('title');
+        var descEl  = doc.querySelector('meta[name="description"]');
+        var title = titleEl ? titleEl.textContent.trim() : '';
+        var desc  = descEl  ? (descEl.getAttribute('content') || '').trim() : 'No description provided.';
+        if (!desc) desc = 'No description provided.';
+        cb(title, desc);
+      } else {
+        cb('', 'Could not load description.');
       }
+    };
+    xhr.onerror = function() { cb('', 'Could not load description.'); };
+    xhr.send();
+  }
 
-      /* Fetch meta for all files in parallel */
-      const cards = await Promise.all(
-        htmlFiles.map(async (file, i) => {
-          const url  = BASE_URL + file.name;
-          const { title, desc } = await fetchMeta(url);
-          const name = title || file.name.replace(/\.html$/i, '').replace(/[-_]/g, ' ');
-          const icon = ICONS[i % ICONS.length];
-          return { name, desc, url, icon, file: file.name };
-        })
-      );
-
-      allCards = cards;
-      render(allCards);
-      stats.textContent = `${allCards.length} tool${allCards.length !== 1 ? 's' : ''} available`;
-
-    } catch (err) {
-      grid.innerHTML = `<div class="state"><span>❌</span>Failed to load tools.<br><small>${err.message}</small></div>`;
-    }
+  function makeCard(card, index) {
+    var article = document.createElement('article');
+    article.className = 'app-card';
+    article.style.animationDelay = (index * 60) + 'ms';
+    article.innerHTML =
+      '<div class="app-main">' +
+        '<div class="app-icon">' + card.icon + '</div>' +
+        '<div class="app-text">' +
+          '<h2>' + escHtml(card.name) + '</h2>' +
+          '<p>' + escHtml(card.desc) + '</p>' +
+          '<div class="badge-row"><span class="badge">Live</span></div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="app-footer">' +
+        '<a href="' + escHtml(card.url) + '" target="_blank" rel="noopener">Open app &#8599;</a>' +
+      '</div>';
+    return article;
   }
 
   function render(cards) {
-    const grid = document.getElementById('grid');
+    var grid = document.getElementById('grid');
+    grid.innerHTML = '';
     if (!cards.length) {
-      grid.innerHTML = `<div class="state"><span>🔎</span>No tools match your search.</div>`;
+      grid.innerHTML = '<div class="state"><span class="state-icon">&#128270;</span>No tools match your search.</div>';
       return;
     }
-    grid.innerHTML = cards.map((c, i) => `
-      <a class="card" href="${c.url}" target="_blank" rel="noopener">
-        <div class="card-icon">${c.icon}</div>
-        <h2>${c.name}</h2>
-        <p>${c.desc}</p>
-        <div class="card-footer">
-          <span class="card-tag">tool</span>
-          <span class="card-arrow">→</span>
-        </div>
-      </a>
-    `).join('');
+    for (var i = 0; i < cards.length; i++) {
+      grid.appendChild(makeCard(cards[i], i));
+    }
   }
 
-  document.getElementById('search').addEventListener('input', function () {
-    const q = this.value.toLowerCase().trim();
+  function loadTools() {
+    var pill = document.getElementById('count-pill');
+    var stats = document.getElementById('stats');
+
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', API_URL, true);
+
+    xhr.onload = function() {
+      if (xhr.status < 200 || xhr.status >= 300) {
+        document.getElementById('grid').innerHTML =
+          '<div class="state"><span class="state-icon">&#10060;</span>Failed to reach GitHub API.</div>';
+        pill.textContent = 'Error';
+        return;
+      }
+
+      var files;
+      try { files = JSON.parse(xhr.responseText); } catch(e) {
+        document.getElementById('grid').innerHTML =
+          '<div class="state"><span class="state-icon">&#10060;</span>Unexpected API response.</div>';
+        return;
+      }
+
+      if (!Array.isArray(files)) {
+        document.getElementById('grid').innerHTML =
+          '<div class="state"><span class="state-icon">&#10060;</span>Could not read repo contents.</div>';
+        return;
+      }
+
+      var htmlFiles = [];
+      for (var i = 0; i < files.length; i++) {
+        var f = files[i];
+        if (f.type === 'file' &&
+            f.name.length > 5 &&
+            f.name.slice(-5).toLowerCase() === '.html' &&
+            f.name !== 'index.html') {
+          htmlFiles.push(f);
+        }
+      }
+
+      if (htmlFiles.length === 0) {
+        document.getElementById('grid').innerHTML =
+          '<div class="state"><span class="state-icon">&#128237;</span>No tools yet — push a .html file to the repo!</div>';
+        pill.textContent = '0 Apps';
+        return;
+      }
+
+      document.getElementById('grid').innerHTML = '';
+      var loaded = 0;
+      var total  = htmlFiles.length;
+
+      for (var j = 0; j < total; j++) {
+        (function(file, idx) {
+          var url  = BASE_URL + file.name;
+          var icon = ICONS[idx % ICONS.length];
+          fetchMeta(url, function(title, desc) {
+            var name = title || file.name.slice(0, -5).replace(/[-_]/g, ' ');
+            allCards.push({ name:name, desc:desc, url:url, icon:icon });
+            loaded++;
+            if (loaded === total) {
+              render(allCards);
+              stats.textContent = total + ' tool' + (total !== 1 ? 's' : '') + ' loaded';
+              pill.textContent  = total + ' Apps';
+            }
+          });
+        })(htmlFiles[j], j);
+      }
+    };
+
+    xhr.onerror = function() {
+      document.getElementById('grid').innerHTML =
+        '<div class="state"><span class="state-icon">&#10060;</span>Network error. Could not reach GitHub API.</div>';
+      pill.textContent = 'Offline';
+    };
+
+    xhr.send();
+  }
+
+  document.getElementById('search').addEventListener('input', function() {
+    var q = this.value.toLowerCase().trim();
     if (!q) { render(allCards); return; }
-    render(allCards.filter(c =>
-      c.name.toLowerCase().includes(q) ||
-      c.desc.toLowerCase().includes(q)
-    ));
+    var filtered = [];
+    for (var i = 0; i < allCards.length; i++) {
+      if (allCards[i].name.toLowerCase().indexOf(q) !== -1 ||
+          allCards[i].desc.toLowerCase().indexOf(q) !== -1) {
+        filtered.push(allCards[i]);
+      }
+    }
+    render(filtered);
   });
 
   loadTools();
 </script>
-
 </body>
 </html>

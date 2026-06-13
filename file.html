@@ -3,7 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AcoShare | P2P File Transfer</title>
+    <meta name="description" content="Send files directly between browsers with a simple peer-to-peer transfer workflow.">
+    <meta name="theme-color" content="#6366f1">
+    <meta name="color-scheme" content="light dark">
+    <title>AcoShare · P2P File Transfer</title>
     <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
 
     <style>
@@ -79,7 +82,7 @@
             gap: 6px;
         }
         .status-dot { width: 8px; height: 8px; border-radius: 50%; background: #cbd5e1; }
-        
+
         .status-pill.connected { background: #dcfce7; color: #166534; }
         .status-pill.connected .status-dot { background: var(--success); }
         .status-pill.disconnected { background: #fee2e2; color: #991b1b; }
@@ -91,7 +94,7 @@
             grid-template-columns: 1fr 1.5fr;
             gap: 20px;
             flex: 1;
-            min-height: 0; 
+            min-height: 0;
         }
 
         @media (max-width: 768px) {
@@ -130,7 +133,7 @@
             color: var(--primary);
             letter-spacing: 2px;
         }
-        
+
         .input-group { display: flex; gap: 10px; margin-top: 10px; }
         input[type="text"], input[type="number"] {
             flex: 1;
@@ -165,14 +168,14 @@
             padding-bottom: 20px;
             border-bottom: 1px solid var(--border);
         }
-        
+
         .file-input-wrapper { display: flex; gap: 10px; align-items: center; margin-bottom: 10px; }
         input[type="file"] { flex: 1; font-size: 0.9rem; }
 
         /* Progress Bars */
         .progress-container { margin-top: 10px; display: none; }
         .progress-container.active { display: block; }
-        
+
         .progress-labels { display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 4px; }
         progress {
             width: 100%;
@@ -216,7 +219,7 @@
             flex-direction: column;
             gap: 8px;
         }
-        
+
         .msg { padding: 6px 10px; border-radius: 8px; max-width: 80%; word-break: break-word; }
         .msg.sys { align-self: center; background: #f1f5f9; color: var(--text-muted); font-size: 0.8rem; font-style: italic; }
         .msg.me { align-self: flex-end; background: var(--primary); color: white; }
@@ -269,7 +272,7 @@
                 <div class="card-header">
                     <h2>File Transfer</h2>
                 </div>
-                
+
                 <div class="file-input-wrapper">
                     <input type="file" id="fileInput" />
                     <button id="sendFileBtn" onclick="startFileSend()" disabled>Send File</button>
@@ -330,10 +333,10 @@
     let receivedChunks = [];
     let receivedSize = 0;
     let totalSize = 0;
-    let incomingFileInfo = null; 
+    let incomingFileInfo = null;
 
     // --- DOM Elements ---
-    let dom = {}; 
+    let dom = {};
 
     function initializeDomElements() {
         dom = {
@@ -376,7 +379,7 @@
         }
 
         const idAttempt = generateShortId();
-        
+
         peer = new Peer(idAttempt.toString(), {
             debug: 1 // Enable debug logging for PeerJS
         });
@@ -427,10 +430,10 @@
         if (!dom.partnerInput) {
             console.error("Critical Error: Partner ID input element is missing.");
             logSystem("Connection failed: DOM initialization error.");
-            return; 
+            return;
         }
-        
-        const partnerId = dom.partnerInput.value.trim(); 
+
+        const partnerId = dom.partnerInput.value.trim();
 
         if (!partnerId) {
             alert("Please enter a Partner Code.");
@@ -443,7 +446,7 @@
 
         logSystem(`Connecting to ${partnerId}...`);
         updateStatus(false, "Connecting...");
-        
+
         const connection = peer.connect(partnerId);
         setupConnection(connection);
     }
@@ -483,7 +486,7 @@
             dom.statusPill.className = "status-pill connected";
             dom.statusText.textContent = textOverride || "Connected";
             dom.chatBtn.disabled = false;
-            dom.connectBtn.disabled = true; 
+            dom.connectBtn.disabled = true;
             dom.partnerInput.disabled = true;
         } else {
             dom.statusPill.className = "status-pill disconnected";
@@ -494,7 +497,7 @@
         }
         updateSendButtonState();
     }
-    
+
     // --- 3. Data Protocol & Routing ---
 
     function handleIncomingData(data) {
@@ -536,7 +539,7 @@
         dom.sendBtn.disabled = true;
         dom.sendProg.classList.add('active');
         dom.sendName.textContent = file.name;
-        
+
         // 1. Send Meta
         console.log(`[SENDER] Sending meta for: ${file.name}`);
         conn.send({
@@ -548,21 +551,21 @@
 
         // 2. Send Chunks
         let offset = 0;
-        
+
         while (offset < file.size) {
             if (!conn || !conn.open) {
                 logSystem("Sending failed: Connection lost.");
                 dom.sendProg.classList.remove('active');
                 return;
             }
-            
+
             const chunk = file.slice(offset, offset + CHUNK_SIZE);
             const buffer = await chunk.arrayBuffer();
-            
+
             conn.send(buffer);
-            
+
             offset += buffer.byteLength;
-            
+
             // Update Progress
             const percent = Math.floor((offset / file.size) * 100);
             dom.sendBar.value = percent;
@@ -576,9 +579,9 @@
         console.log("[SENDER] Sending done marker.");
         conn.send({ kind: 'done' });
         logSystem(`✅ Sent file: ${file.name}`);
-        
+
         updateSendButtonState();
-        
+
         setTimeout(() => dom.sendProg.classList.remove('active'), 3000);
     }
 
@@ -595,14 +598,14 @@
         dom.recvBar.value = 0;
         dom.recvPerc.textContent = "0%";
         dom.dlBox.style.display = "none";
-        
+
         logSystem(`📥 Receiving file: ${meta.name} (${formatBytes(meta.size)})...`);
     }
 
     function handleFileChunk(buffer) {
         if (!incomingFileInfo) {
             console.warn("[RECEIVER] Ignoring binary chunk: Metadata not yet received.");
-            return; 
+            return;
         }
 
         receivedChunks.push(buffer);
@@ -628,7 +631,7 @@
         dom.dlBox.style.display = "block";
 
         logSystem(`🎉 File received: ${incomingFileInfo.name}. Click download link.`);
-        
+
         // Reset state
         incomingFileInfo = null;
         receivedChunks = [];

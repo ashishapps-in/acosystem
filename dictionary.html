@@ -3,11 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Search words, definitions, examples, and quick vocabulary helpers in a clean browser dictionary.">
+    <meta name="theme-color" content="#4f46e5">
+    <meta name="color-scheme" content="light dark">
     <title>Ashish Dictionary</title>
-    <!-- 
-        NOTE ON CDN USAGE: 
-        We use the Tailwind CDN here for simplicity, as we cannot run a local build process (like PostCSS or CLI) 
-        in this single-file environment. For actual production, you must install Tailwind as per official documentation. 
+    <!--
+        NOTE ON CDN USAGE:
+        We use the Tailwind CDN here for simplicity, as we cannot run a local build process (like PostCSS or CLI)
+        in this single-file environment. For actual production, you must install Tailwind as per official documentation.
     -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -20,26 +23,26 @@
             --color-primary-100: 224, 231, 255; /* indigo-100 */
             --color-primary-200: 199, 210, 254; /* indigo-200 */
         }
-        
+
         /* Custom font and basic styling */
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
         body {
             font-family: 'Inter', sans-serif;
             background-color: #f3f4f6;
         }
-        
+
         /* Custom styling that uses CSS variables for theme switching */
         .word-list-tag {
             display: inline-block;
             background-color: rgb(var(--color-primary-100));
             color: rgb(var(--color-primary-600));
             padding: 8px 12px;
-            border-radius: 9999px; 
+            border-radius: 9999px;
             font-size: 0.875rem;
             font-weight: 500;
             cursor: pointer;
             transition: background-color 150ms ease-in-out;
-            white-space: nowrap; 
+            white-space: nowrap;
         }
         .word-list-tag:hover {
             background-color: rgb(var(--color-primary-200));
@@ -61,7 +64,7 @@
         }
         .ring-theme-focus:focus-within {
              /* Use !important to override the default Tailwind focus ring on form elements */
-            --tw-ring-color: rgba(var(--color-primary-200)) !important; 
+            --tw-ring-color: rgba(var(--color-primary-200)) !important;
         }
 
         /* Styling for horizontal history/bookmark scroll */
@@ -109,7 +112,7 @@
 
     <!-- Main Container -->
     <div id="app-container" class="w-full max-w-4xl">
-        
+
         <!-- Theme Control (Moved up for better visibility) -->
         <div class="flex justify-end mb-4">
              <div class="relative">
@@ -158,7 +161,7 @@
 
         <!-- Search Input and Button -->
         <div class="flex space-x-4 mb-8 relative ring-theme-focus">
-            
+
             <!-- Language Dropdown -->
             <div class="relative">
                 <select id="language-select" class="p-3 border-2 border-theme-secondary rounded-xl shadow-md focus:ring-4 focus:border-theme-primary transition duration-200 text-lg appearance-none bg-white pr-8">
@@ -166,16 +169,16 @@
                 </select>
                 <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none"></i>
             </div>
-            
+
             <!-- Search Input -->
-            <input type="text" id="word-input" list="autocomplete-words" placeholder="Type an English word..." 
+            <input type="text" id="word-input" list="autocomplete-words" placeholder="Type an English word..."
                    class="flex-grow p-3 border-2 border-theme-secondary rounded-xl shadow-md focus:ring-4 focus:border-theme-primary transition duration-200 text-lg">
-            
+
             <!-- Autocomplete Datalist -->
             <datalist id="autocomplete-words"></datalist>
 
             <!-- Search Button -->
-            <button id="search-button" 
+            <button id="search-button"
                     class="p-3 bg-theme-primary text-white font-semibold rounded-xl shadow-lg hover:bg-theme-primary transition duration-150 transform hover:scale-[1.02] disabled:opacity-50 flex items-center justify-center min-w-[100px]">
                 <i data-lucide="search" class="w-5 h-5 mr-2"></i>
                 Search
@@ -216,11 +219,11 @@
     <script type="module">
         // Helper function to initialize Lucide icons
         lucide.createIcons();
-        
+
         // Suppress the console warning about CDN usage in this specific environment
         console.warn = (message, ...optionalParams) => {
             if (typeof message === 'string' && message.includes('cdn.tailwindcss.com')) {
-                return; 
+                return;
             }
             console.error(message, ...optionalParams);
         };
@@ -243,7 +246,7 @@
             'he': { name: 'Hebrew', host: 'https://api.dictionaryapi.dev/api/v2/entries/he/' }, // Placeholder
         };
         let currentLang = localStorage.getItem(LANG_KEY) || 'en';
-        
+
         // Theme Definitions (RGB values for a consistent palette)
         const THEMES = {
             'indigo': { primary: '79, 70, 229', primary_700: '67, 56, 202', light: '224, 231, 255', lighter: '199, 210, 254' },
@@ -278,10 +281,10 @@
         const historyPanel = document.getElementById('history-panel');
         const bookmarksPanel = document.getElementById('bookmarks-panel');
         const autocompleteList = document.getElementById('autocomplete-words');
-        
+
         const themeButton = document.getElementById('theme-button');
         const themeDropdown = document.getElementById('theme-dropdown');
-        
+
         let currentBookmarks = new Set();
         let currentWordData = null; // Stores the structured data of the currently displayed word
 
@@ -323,14 +326,14 @@
         function updateHistory(word, langCode = currentLang) {
             const normalizedItem = { word: word, lang: langCode, timestamp: new Date().getTime() };
             let history = loadData(HISTORY_KEY);
-            
+
             history = history.filter(item => item.word !== normalizedItem.word);
-            
+
             history.unshift(normalizedItem);
             if (history.length > MAX_HISTORY_ITEMS) {
                 history = history.slice(0, MAX_HISTORY_ITEMS);
             }
-            
+
             saveData(HISTORY_KEY, history);
             renderHistory();
         }
@@ -341,10 +344,10 @@
                 historyPanel.innerHTML = '<p class="text-gray-500 italic text-sm">No search history yet. Start searching words!</p>';
                 return;
             }
-            
+
             history.sort((a, b) => b.timestamp - a.timestamp);
-            
-            const historyHtml = history.map(item => 
+
+            const historyHtml = history.map(item =>
                 `<span class="word-list-tag" onclick="document.getElementById('word-input').value='${item.word}'; fetchWord();">
                     ${item.word}
                 </span>`
@@ -362,8 +365,8 @@
             if (currentBookmarks.has(bookmarkId)) {
                 bookmarksList = bookmarksList.filter(item => item.word !== word || item.lang !== langCode);
             } else {
-                bookmarksList.push({ 
-                    word: word, 
+                bookmarksList.push({
+                    word: word,
                     lang: langCode,
                     // Clone the data to save the state at the time of bookmarking
                     data: JSON.parse(JSON.stringify(currentWordData))
@@ -379,14 +382,14 @@
         function renderBookmarks() {
             const bookmarksList = loadData(BOOKMARKS_KEY);
             currentBookmarks = new Set(bookmarksList.map(item => `${item.word}-${item.lang}`));
-            
+
             if (bookmarksList.length === 0) {
                 bookmarksPanel.innerHTML = '<p class="text-gray-500 italic text-sm">No bookmarks yet. Search a word and click the bookmark button when a definition is found.</p>';
                 return;
             }
 
-            const bookmarksHtml = bookmarksList.map(item => 
-                `<span class="word-list-tag bg-pink-100 text-pink-700 hover:bg-pink-200" 
+            const bookmarksHtml = bookmarksList.map(item =>
+                `<span class="word-list-tag bg-pink-100 text-pink-700 hover:bg-pink-200"
                        onclick="document.getElementById('word-input').value='${item.word}'; fetchWord(item.word, item.data, item.lang);">
                     ${item.word}
                 </span>`
@@ -394,13 +397,13 @@
 
             bookmarksPanel.innerHTML = bookmarksHtml;
         }
-        
+
         // --- UI HELPERS ---
 
         function updateBookmarkButton(word, langCode = DEFAULT_LANG_CODE) {
             const bookmarkButton = document.getElementById('bookmark-toggle-button');
             if (!bookmarkButton) return;
-            
+
             const bookmarkId = `${word}-${langCode}`;
             const isBookmarked = currentBookmarks.has(bookmarkId);
 
@@ -425,7 +428,7 @@
         function displayStatus(message, type = 'loading') {
             statusMessage.textContent = message;
             statusMessage.classList.remove('hidden', 'bg-red-100', 'text-red-800', 'border-red-300', 'bg-yellow-100', 'text-yellow-800', 'border-yellow-300');
-            
+
             switch (type) {
                 case 'error':
                     statusMessage.classList.add('bg-red-100', 'text-red-800', 'border-red-300');
@@ -434,16 +437,16 @@
                     statusMessage.classList.add('bg-yellow-100', 'text-yellow-800', 'border-yellow-300');
                     break;
                 default:
-                    statusMessage.classList.add('hidden'); 
+                    statusMessage.classList.add('hidden');
             }
         }
-        
+
         function renderRelatedWords(list, label) {
             if (!list || list.length === 0) return '';
-            const uniqueList = Array.from(new Set(list)).slice(0, 5); 
+            const uniqueList = Array.from(new Set(list)).slice(0, 5);
 
-            const words = uniqueList.map(word => 
-                `<span class="bg-theme-secondary text-theme-primary px-3 py-1 rounded-full text-sm font-medium cursor-pointer transition hover:bg-theme-lighter active:scale-95" 
+            const words = uniqueList.map(word =>
+                `<span class="bg-theme-secondary text-theme-primary px-3 py-1 rounded-full text-sm font-medium cursor-pointer transition hover:bg-theme-lighter active:scale-95"
                        onclick="document.getElementById('word-input').value='${word}'; fetchWord();">
                     ${word}
                 </span>`
@@ -456,14 +459,14 @@
                 </div>
             `;
         }
-        
+
         function renderMeaning(meaning) {
             const partOfSpeech = meaning.partOfSpeech;
-            
+
             const definitionsHtml = meaning.definitions.map((def, index) => {
                 const definition = def.definition;
                 const example = def.example ? `<p class="italic text-gray-600 mt-1 pl-2 border-l-2 border-theme-secondary">“${def.example}”</p>` : '';
-                
+
                 return `
                     <li class="mb-4 text-gray-700">
                         <span class="font-medium text-gray-800">${index + 1}.</span> ${definition}
@@ -494,7 +497,7 @@
                 displayStatus('Definition data is empty.', 'error');
                 return;
             }
-            
+
             const wordData = data[0];
             const word = wordData.word;
             currentWordData = data;
@@ -534,7 +537,7 @@
                                 <i data-lucide="volume-2" class="w-5 h-5"></i>
                             </button>
                         ` : ''}
-                        <button id="bookmark-toggle-button" 
+                        <button id="bookmark-toggle-button"
                                 class="p-3 text-white font-semibold rounded-xl shadow-md transition duration-150 transform hover:scale-[1.05] whitespace-nowrap"
                                 onclick="toggleBookmark('${word}', '${langCode}')">
                         </button>
@@ -548,11 +551,11 @@
             resultsContainer.innerHTML = headerHtml + meaningsHtml;
             resultsContainer.classList.remove('hidden');
             displayStatus('', 'success');
-            
+
             updateBookmarkButton(word, langCode);
             updateHistory(word, langCode);
             lucide.createIcons();
-            
+
             // Re-attach Export button listeners after content update
             setupExportListeners();
         }
@@ -580,7 +583,7 @@
             const langConfig = API_CONFIGS[currentLang];
             const encodedWord = encodeURIComponent(word);
             const apiUrl = `${langConfig.host}${encodedWord}`;
-            
+
             displayStatus(`Searching for "${word}" in ${langConfig.name}...`);
             searchButton.disabled = true;
 
@@ -624,7 +627,7 @@
 
             localStorage.setItem(THEME_KEY, themeName);
             currentTheme = themeName;
-            
+
             renderHistory();
             renderBookmarks();
             lucide.createIcons();
@@ -637,7 +640,7 @@
                 }
             });
         }
-        
+
         // --- EXPORT LOGIC for CURRENT DEFINITION ---
 
         /** Generates the content for export based on the current search result. */
@@ -654,7 +657,7 @@
                 case 'txt':
                     content = `WORD: ${item.word.toUpperCase()}\n\n`;
                     content += item.meanings.map(m => {
-                        const definitions = m.definitions.map((d, i) => 
+                        const definitions = m.definitions.map((d, i) =>
                             `${i + 1}. ${d.definition}\n   ${d.example ? 'Example: ' + d.example + '\n' : ''}`
                         ).join('');
                         return `--- Part of Speech: ${m.partOfSpeech.toUpperCase()} ---\n${definitions}\n`;
@@ -664,7 +667,7 @@
 
                 case 'csv':
                     const headers = 'Word,Part of Speech,Definition,Example\n';
-                    const rows = item.meanings.flatMap(m => 
+                    const rows = item.meanings.flatMap(m =>
                         m.definitions.map(d => {
                             const def = d.definition.replace(/"/g, '""'); // Escape quotes
                             const example = (d.example || '').replace(/"/g, '""');
@@ -674,12 +677,12 @@
                     content = headers + rows;
                     mime = 'text/csv';
                     break;
-                
+
                 case 'pdf-simulated':
-                    content = "--- PDF (SIMULATED TEXT FILE) ---\n\n" + 
-                              `WORD: ${item.word.toUpperCase()}\n----------------------\n` + 
-                               item.meanings.map(m => 
-                                   `\nPart of Speech: ${m.partOfSpeech}\n` + 
+                    content = "--- PDF (SIMULATED TEXT FILE) ---\n\n" +
+                              `WORD: ${item.word.toUpperCase()}\n----------------------\n` +
+                               item.meanings.map(m =>
+                                   `\nPart of Speech: ${m.partOfSpeech}\n` +
                                    m.definitions.map((d, i) => ` ${i+1}. ${d.definition}\n   Example: ${d.example || 'N/A'}`).join('\n')
                                ).join('');
                     mime = 'text/plain';
@@ -710,14 +713,14 @@
             const { content, mime } = generateCurrentExportContent(format);
             const word = currentWordData[0].word.replace(/\s/g, '_');
             const filename = `${word}_Definition_${new Date().toISOString().slice(0, 10)}.${format.split('-')[0]}`;
-            
+
             if (content.includes('Error:')) {
                 displayStatus(content, 'error');
             } else {
                 downloadFile(content, mime, filename);
                 displayStatus(`Successfully exported definition as ${format.toUpperCase()}.`, 'loading');
             }
-            
+
             // Hide dropdown after action
             document.getElementById('export-result-dropdown').classList.add('hidden');
         }
@@ -728,12 +731,12 @@
                 const exportResultDropdown = document.getElementById('export-result-dropdown');
                 if (exportResultDropdown) exportResultDropdown.classList.add('hidden');
             }
-            
+
             if (button.id !== 'export-result-button') {
                 const themeDropdown = document.getElementById('theme-dropdown');
                 if (themeDropdown) themeDropdown.classList.add('hidden');
             }
-            
+
             dropdown.classList.toggle('hidden');
         }
 
@@ -742,7 +745,7 @@
         function setupExportListeners() {
             const exportButton = document.getElementById('export-result-button');
             const exportDropdown = document.getElementById('export-result-dropdown');
-            
+
             if (exportButton && exportDropdown) {
                  exportButton.addEventListener('click', (e) => {
                     e.preventDefault();
@@ -753,7 +756,7 @@
                 });
             }
         }
-        
+
         function setupAutocomplete() {
             // Clear existing options
             autocompleteList.innerHTML = '';
@@ -765,7 +768,7 @@
                 autocompleteList.appendChild(option);
             });
         }
-        
+
         function setupTabs() {
             const tabButtons = document.querySelectorAll('.tab-button');
             const tabPanels = document.querySelectorAll('.tab-panel');
@@ -801,7 +804,7 @@
                 themeDropdown.classList.add('hidden');
             });
         });
-        
+
         // Close dropdowns when clicking outside
         document.addEventListener('click', (e) => {
             if (themeDropdown && !themeButton.contains(e.target) && !themeDropdown.contains(e.target)) {
@@ -828,11 +831,11 @@
                     return;
                 }
             }
-            
+
             const wordList = LANGUAGE_WORD_LISTS[currentLang] || LANGUAGE_WORD_LISTS['en'];
             const randomWord = wordList[Math.floor(Math.random() * wordList.length)];
             const langConfig = API_CONFIGS[currentLang];
-            
+
             const response = await fetch(`${langConfig.host}${randomWord}`);
             if (response.ok) {
                 const data = await response.json();
@@ -846,7 +849,7 @@
             const container = document.getElementById('word-of-the-day-container');
             const contentDiv = document.getElementById('word-of-the-day-content');
             const closeButton = document.getElementById('close-word-of-the-day');
-            
+
             if (!data) {
                 container.classList.add('hidden');
                 return;
@@ -854,7 +857,7 @@
 
             const wordData = data[0];
             const phoneticText = wordData.phonetic || wordData.phonetics.find(p => p.text)?.text || '';
-            
+
             contentDiv.innerHTML = `
                 <h4 class="text-3xl font-bold text-theme-primary mb-1">${wordData.word}</h4>
                 <p class="text-gray-600 mb-3">${phoneticText}</p>
@@ -862,22 +865,22 @@
                 <button onclick="document.getElementById('word-input').value='${wordData.word}'; fetchWord();" class="mt-4 text-sm font-semibold text-theme-primary hover:underline">View full definition &rarr;</button>
             `;
             container.classList.remove('hidden');
-            
+
             closeButton.addEventListener('click', () => {
                 container.classList.add('hidden');
             });
         }
-        
+
         window.onload = () => {
             applyTheme(currentTheme);
             setupTabs();
             setupAutocomplete();
             setLanguage(currentLang); // Initialize language state
             fetchWordOfTheDay();
-            
+
             renderHistory();
             renderBookmarks();
-            
+
             wordInput.focus();
 
             // --- Event Listeners ---
@@ -899,7 +902,7 @@
             wordInput.value = randomWord;
             fetchWord();
         }
-        
+
         document.getElementById('random-word-button').addEventListener('click', fetchRandomWord);
 
         // Expose functions to the global scope

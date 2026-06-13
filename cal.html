@@ -4,8 +4,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CalcTech</title>
-    <meta name="description" content="A Calculator tool with Advance Theme Customization">
+    <title>CalcTech · Customizable Calculator</title>
+    <meta name="description" content="A polished calculator with history, precision settings, haptics, sounds, and advanced theme customization.">
+    <meta name="theme-color" content="#0f172a">
+    <meta name="color-scheme" content="light dark">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
@@ -104,7 +106,7 @@
             <div class="section-title">Presets</div>
             <div class="preset-grid">
                 <button class="preset-btn" data-theme="modern">Modern</button>
-                <button class="preset-btn" data-theme="nooo">Not Working</button>
+                <button class="preset-btn" data-theme="minimal">Minimal</button>
                 <button class="preset-btn" data-theme="dark">Dark</button>
                 <button class="preset-btn" data-theme="amoled">Amoled</button>
                 <button class="preset-btn" data-theme="retro">Retro</button>
@@ -940,7 +942,7 @@ const ThemePresets = {
         '--operator-bg': '#ff9f0a',
         '--btn-bg': 'rgba(255, 255, 255, 0.1)'
     },
-    light: {
+    minimal: {
         '--bg-color': '#e2e8f0',
         '--blob-color-1': '#3b82f6',
         '--blob-color-2': '#f43f5e',
@@ -1312,7 +1314,7 @@ class Calculator {
         if (this.settings.base === 10) {
             this.currentOperand = (parseFloat(this.currentOperand) * -1).toString();
         } else {
-            // For hex/bin, sign is complex (2's complement vs - sign). 
+            // For hex/bin, sign is complex (2's complement vs - sign).
             // Let's just do math negate
             let val = parseInt(this.currentOperand, this.settings.base);
             val = -val;
@@ -1334,7 +1336,7 @@ const calculator = new Calculator(prevOpElem, currOpElem);
 const historyManager = new HistoryManager();
 
 /* --- Mode Switcher --- */
-// const modeSelector = document.getElementById('mode-selector'); 
+// const modeSelector = document.getElementById('mode-selector');
 // Removed mode selector logic as it's just basic now.
 
 // Initialize Layout

@@ -3,7 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ashish News - Your Personalized News Hub</title>
+    <meta name="description" content="Browse, filter, save, and manage personalized news stories in a responsive reading hub.">
+    <meta name="theme-color" content="#2563eb">
+    <meta name="color-scheme" content="light dark">
+    <title>Ashish News · Personalized News Hub</title>
     <style>
         :root {
             --primary-color: #2563eb;
@@ -20,7 +23,7 @@
             --text-color-dark: #f1f5f9;
             --secondary-text-color-dark: #94a3b8;
             --border-color-dark: #334155;
-            
+
             --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
             --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
             --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
@@ -416,13 +419,13 @@
             padding: 0.25rem;
         }
 
-        body.light-mode .bookmark-btn, 
+        body.light-mode .bookmark-btn,
         body.light-mode .related-btn,
         body.light-mode .share-btn {
             color: var(--secondary-text-color-light);
         }
 
-        body.dark-mode .bookmark-btn, 
+        body.dark-mode .bookmark-btn,
         body.dark-mode .related-btn,
         body.dark-mode .share-btn {
             color: var(--secondary-text-color-dark);
@@ -1171,7 +1174,7 @@
             totalArticlesEl.textContent = allArticlesCache.length;
             const filtered = getFilteredArticles();
             filteredArticlesEl.textContent = filtered.length;
-            
+
             const now = new Date();
             const diff = Math.floor((now - lastUpdated) / 1000 / 60);
             if (diff < 1) {
@@ -1253,11 +1256,11 @@
                 const response = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(feed.url)}`);
                 const data = await response.json();
                 if (!data.items) return [];
-                return data.items.map(item => ({ 
-                    ...item, 
-                    source: feed.name, 
+                return data.items.map(item => ({
+                    ...item,
+                    source: feed.name,
                     country: feed.country,
-                    category: feed.category 
+                    category: feed.category
                 }));
             } catch (error) {
                 console.error('Error fetching news:', error);
@@ -1281,7 +1284,7 @@
 
         const displayNews = (articles, query = '') => {
             newsContainer.innerHTML = '';
-            
+
             if (articles.length === 0) {
                 newsContainer.innerHTML = `
                     <div class="empty-state">
@@ -1305,7 +1308,7 @@
                 if (imagesEnabled) {
                     imageWrapper = document.createElement('div');
                     imageWrapper.className = 'image-wrapper';
-                    
+
                     const categoryBadge = document.createElement('span');
                     categoryBadge.className = 'category-badge';
                     categoryBadge.textContent = `${getCategoryIcon(article.category)} ${article.category}`;
@@ -1345,14 +1348,14 @@
 
                 const meta = document.createElement('div');
                 meta.className = 'meta';
-                
+
                 const metaInfo = document.createElement('div');
                 metaInfo.className = 'meta-info';
-                
+
                 const sourceSpan = document.createElement('span');
                 sourceSpan.className = 'meta-source';
                 sourceSpan.textContent = article.source;
-                
+
                 const dateSpan = document.createElement('span');
                 const date = new Date(article.pubDate);
                 const now = new Date();
@@ -1362,7 +1365,7 @@
                 } else {
                     dateSpan.textContent = date.toLocaleDateString();
                 }
-                
+
                 metaInfo.appendChild(sourceSpan);
                 metaInfo.appendChild(dateSpan);
                 meta.appendChild(metaInfo);
@@ -1424,7 +1427,7 @@
 
                 newsContainer.appendChild(articleElement);
             }
-            
+
             updateStats();
         };
 
@@ -1745,7 +1748,7 @@
         const initControls = () => {
             // Populate categories
             const categories = ['All', ...new Set(rssFeeds.map(f => f.category))];
-            categorySelect.innerHTML = categories.map(cat => 
+            categorySelect.innerHTML = categories.map(cat =>
                 `<option value="${cat}">${cat === 'All' ? 'All categories' : `${getCategoryIcon(cat)} ${cat}`}</option>`
             ).join('');
 

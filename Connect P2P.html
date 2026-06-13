@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <title>Connect the Lines · Ultimate P2P</title>
-    <meta name="description" content="The Classic Connect the Lines with your Friends">
+    <meta name="description" content="Play Connect the Lines with friends in real time using a private peer-to-peer room.">
+    <meta name="theme-color" content="#050510">
+    <meta name="color-scheme" content="light dark">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://unpkg.com/peerjs@1.5.5/dist/peerjs.min.js"></script>
     <style>
@@ -18,27 +20,27 @@
             --card-border: #2a2a4a;
             --text: #e0e6ed;
             --subtext: #8b9bb4;
-            
+
             --accent: #d946ef; /* Pink */
             --accent-glow: 0 0 10px rgba(217, 70, 239, 0.4);
-            
+
             --p1: #00ff9d; /* Neon Green */
             --p1-glow: 0 0 12px rgba(0, 255, 157, 0.6);
             --p2: #00d9ff; /* Cyan */
             --p2-glow: 0 0 12px rgba(0, 217, 255, 0.6);
-            
+
             --line-empty: #2d2d45;
             --line-hover: #ffffff;
             --dot: #565676;
-            
+
             --btn-bg: #2d2d45;
             --btn-hover: #3d3d5c;
-            
+
             --font-main: system-ui, -apple-system, sans-serif;
             --radius: 12px;
-            
+
             /* Splash Text Color */
-            --splash-color: #ffff55; 
+            --splash-color: #ffff55;
             --splash-shadow: 2px 2px 0px #3f3f3f;
         }
 
@@ -118,7 +120,7 @@
         /* ========================================= */
 
         * { box-sizing: border-box; margin: 0; padding: 0; transition: background 0.2s, color 0.2s, border-color 0.2s; }
-        
+
         body {
             background: var(--bg);
             color: var(--text);
@@ -137,7 +139,7 @@
             width: 100%;
             max-width: 1200px;
             display: grid;
-            grid-template-columns: 280px 1fr 280px; 
+            grid-template-columns: 280px 1fr 280px;
             gap: 20px;
             align-items: start;
         }
@@ -176,7 +178,7 @@
 
         h1 { font-size: 20px; font-weight: 800; color: var(--text); margin: 0; }
         h2 { font-size: 13px; text-transform: uppercase; letter-spacing: 1px; color: var(--subtext); margin-bottom: 8px; border-bottom: 1px solid var(--line-empty); padding-bottom: 5px; }
-        
+
         .tag { font-size: 10px; background: var(--btn-bg); padding: 4px 8px; border-radius: 99px; color: var(--accent); border: 1px solid var(--card-border); }
 
         .help-btn {
@@ -221,10 +223,10 @@
         }
         button:hover:not(:disabled) { background: var(--btn-hover); border-color: var(--subtext); }
         button:disabled { opacity: 0.5; cursor: not-allowed; }
-        
+
         button.primary { background: var(--accent); color: #fff; border: none; box-shadow: var(--accent-glow); }
         button.primary:hover:not(:disabled) { opacity: 0.9; }
-        
+
         button.danger { border-color: #ef4444; color: #ef4444; background: transparent; }
         button.danger:hover { background: #ef4444; color: white; }
 
@@ -255,7 +257,7 @@
             font-size: 12px;
             margin-bottom: 10px;
         }
-        
+
         .chat-msg { padding: 4px 8px; border-radius: 4px; max-width: 90%; word-wrap: break-word; }
         .chat-msg.system { color: var(--subtext); font-style: italic; text-align: center; width: 100%; margin: 5px 0; }
         .chat-msg.me { align-self: flex-end; background: var(--btn-bg); color: var(--text); border: 1px solid var(--line-empty); }
@@ -321,10 +323,10 @@
         .board-row { display: flex; align-items: center; }
 
         .dot { width: 10px; height: 10px; background: var(--dot); border-radius: 50%; z-index: 2; }
-        
+
         .line-h { width: 60px; height: 8px; margin: 0 2px; background: var(--line-empty); border-radius: 4px; cursor: pointer; position: relative; }
         .line-v { width: 8px; height: 60px; margin: 2px 0; background: var(--line-empty); border-radius: 4px; cursor: pointer; position: relative; }
-        
+
         .line-h:hover, .line-v:hover { background: var(--line-hover); box-shadow: 0 0 8px var(--line-hover); }
         .line-h.taken.p1, .line-v.taken.p1 { background: var(--p1); box-shadow: var(--p1-glow); cursor: default; }
         .line-h.taken.p2, .line-v.taken.p2 { background: var(--p2); box-shadow: var(--p2-glow); cursor: default; }
@@ -376,7 +378,7 @@
             <h1>Connect P2P</h1>
             <button class="help-btn" onclick="openHelp()">?</button>
         </div>
-        
+
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
             <span class="tag">Status</span>
             <span class="tag" id="statusTag">Disconnected</span>
@@ -421,8 +423,8 @@
         <div class="scoreboard-container">
             <!-- Left: ALWAYS "You" (visual), color adjusted by JS -->
             <div id="p1Badge" class="player-badge p1 active">
-                <span>●</span> 
-                <input id="myNm" value="You" maxlength="8"> 
+                <span>●</span>
+                <input id="myNm" value="You" maxlength="8">
                 <span id="s1" class="score-display">0</span>
             </div>
 
@@ -434,8 +436,8 @@
 
             <!-- Right: ALWAYS Opponent (visual) -->
             <div id="p2Badge" class="player-badge p2">
-                <span id="s2" class="score-display">0</span> 
-                <span id="oppNm">Opponent</span> 
+                <span id="s2" class="score-display">0</span>
+                <span id="oppNm">Opponent</span>
                 <span>●</span>
             </div>
         </div>
@@ -448,7 +450,7 @@
                 </div>
             </div>
         </div>
-        
+
         <div style="text-align:center; font-size:12px; color:var(--subtext); margin-top:5px;">
             <span id="gameInfo">Host controls settings.</span>
         </div>
@@ -460,7 +462,7 @@
             <h1>Chat Room</h1>
             <span class="tag">Live</span>
         </div>
-        
+
         <div class="chat-container">
             <div class="chat-box" id="chatDisplay">
                 <div class="chat-msg system">Welcome! Connect to play.</div>
@@ -487,7 +489,7 @@
 <div id="helpOverlay" class="overlay">
     <div class="overlay-card" style="text-align:left;">
         <h1 style="text-align:center; margin-bottom:20px; color:var(--accent);">How to Play</h1>
-        
+
         <div class="help-section">
             <h3>🎯 Objective</h3>
             <p>Connect two adjacent dots with a line. If you complete a 1x1 box, you earn a point and get an <strong>extra turn</strong>.</p>
@@ -520,13 +522,13 @@
 <script>
     // --- SPLASH TEXT LOGIC ---
     const splashes = [
-        "Also try Minecraft!", "Now with more lines!", "Ashish is magic!", "Don't Speak lie!", 
-        "Creeper? Aww man!", "Hello World!", "No Complex Coding involved!", "90% Bug Free!", 
-        "Best Game!", "HTML5 inside!", "Do a barrel roll!", "Powered by CSS!", 
+        "Also try Minecraft!", "Now with more lines!", "Ashish is magic!", "Don't Speak lie!",
+        "Creeper? Aww man!", "Hello World!", "No Complex Coding involved!", "90% Bug Free!",
+        "Best Game!", "HTML5 inside!", "Do a barrel roll!", "Powered by CSS!",
         "Connect them all!", "Is this a square?", "Look behind you!", "10/10 - Rated by the developer",
-        "Better than Chess!", "Click me!", "Speech die", "Keyboard friendly!", "I am out of Ideas Now!", 
+        "Better than Chess!", "Click me!", "Speech die", "Keyboard friendly!", "I am out of Ideas Now!",
         "Why i made game for Kids", "Covid days are really Good", "Lord is my Shepard", "Who was the Iron Man?", "Try Other Modes also",
-        "Invite people to game", "Want to end Friendship, Let them have a match with you", "AI will dominate the world", "I am good at writing random things", 
+        "Invite people to game", "Want to end Friendship, Let them have a match with you", "AI will dominate the world", "I am good at writing random things",
         "Do you know? Friend ends with end", "Great quotes are written by me while i wrote these", "Yes i am out of ideas", "why do you read it", "donot read, play", "Focus",
     ];
 
@@ -536,7 +538,7 @@
         do {
             newSplash = splashes[Math.floor(Math.random() * splashes.length)];
         } while (newSplash === el.innerText);
-        
+
         el.style.animation = 'none';
         el.offsetHeight;
         el.style.animation = 'pulse-text 0.8s infinite alternate ease-in-out';
@@ -555,7 +557,7 @@
     let mePlayer = 1;
     let oppPlayer = 2;
 
-    let turn = 1; 
+    let turn = 1;
     let p1Name = "You", p2Name = "Opponent";
     let scores = {1: 0, 2: 0};
     let size = 4;
@@ -892,7 +894,7 @@
         else if (winner === oppPlayer) title = "Opponent Wins!";
 
         document.getElementById('winnerTitle').innerText = title;
-        document.getElementById('finalScore').innerText = 
+        document.getElementById('finalScore').innerText =
             `Final Score: ${scores[mePlayer]} - ${scores[oppPlayer]}`;
 
         document.getElementById('overlay').classList.add('active');
@@ -934,7 +936,7 @@
     // Help Popup Logic
     function openHelp() { document.getElementById('helpOverlay').classList.add('active'); }
     function closeHelp() { document.getElementById('helpOverlay').classList.remove('active'); }
-    
+
     function resetGame() {
         sysMsg("Connection lost or closed.");
         els.status.textContent = "Disconnected";

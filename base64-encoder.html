@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Encode and decode Base64 text instantly in your browser.">
+    <title>Base64 Encoder/Decoder · Acosystem</title>
+    <style>
+        :root {
+            --bg: #080b12;
+            --card: #111827;
+            --accent: #3b82f6;
+            --accent-soft: rgba(59, 130, 246, 0.15);
+            --text: #e5e7eb;
+            --muted: #9ca3af;
+            --border: #1f2937
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0
+        }
+
+        body {
+            font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+            background: radial-gradient(ellipse at top, #1a2332, #020617 55%);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 24px 16px 40px
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto
+        }
+
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #fff, #93c5fd);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 16px;
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 13px
+        }
+
+        .back-link:hover {
+            color: var(--accent)
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 140px;
+            padding: 16px;
+            border-radius: 14px;
+            background: rgba(17, 24, 39, .9);
+            border: 1px solid var(--border);
+            color: var(--text);
+            font-size: 15px;
+            line-height: 1.6;
+            resize: vertical;
+            outline: none;
+            transition: border-color .2s;
+            font-family: inherit
+        }
+
+        textarea:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, .15)
+        }
+
+        .mode-tabs {
+            display: flex;
+            gap: 0;
+            margin: 16px 0;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid var(--border)
+        }
+
+        .mode-tab {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            background: rgba(17, 24, 39, .9);
+            color: var(--muted);
+            font-weight: 600;
+            font-size: 13px;
+            transition: all .2s;
+            border: none
+        }
+
+        .mode-tab.active {
+            background: rgba(59, 130, 246, .2);
+            color: var(--accent)
+        }
+
+        .mode-tab:not(:last-child) {
+            border-right: 1px solid var(--border)
+        }
+
+        .output-wrap {
+            position: relative
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            padding: 6px 14px;
+            border-radius: 8px;
+            border: 1px solid rgba(55, 65, 81, .9);
+            background: rgba(15, 23, 42, .95);
+            color: var(--text);
+            cursor: pointer;
+            font-size: 12px;
+            transition: all .2s
+        }
+
+        .copy-btn:hover {
+            border-color: var(--accent)
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 12px;
+            flex-wrap: wrap
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 10px;
+            border: 1px solid rgba(55, 65, 81, .9);
+            background: rgba(15, 23, 42, .95);
+            color: var(--text);
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all .2s
+        }
+
+        .btn:hover {
+            border-color: var(--accent);
+            box-shadow: 0 4px 14px rgba(59, 130, 246, .28)
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #fff
+        }
+
+        .btn-primary:hover {
+            background: #2563eb
+        }
+
+        .error {
+            color: #ef4444;
+            font-size: 13px;
+            margin-top: 8px;
+            min-height: 20px
+        }
+
+        .shamal {
+            font-size: 11px;
+            color: rgba(148, 163, 184, .35);
+            text-align: center;
+            margin-top: 30px;
+            letter-spacing: .14em;
+            text-transform: uppercase
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <a href="./index.html" class="back-link">← Back to Launcher</a>
+        <h1>🔐 Base64 Encoder / Decoder</h1>
+        <div class="mode-tabs">
+            <button class="mode-tab active" data-mode="encode">Encode</button>
+            <button class="mode-tab" data-mode="decode">Decode</button>
+        </div>
+        <textarea id="input" placeholder="Type text to encode or paste Base64 to decode…" autofocus></textarea>
+        <div class="output-wrap">
+            <textarea id="output" placeholder="Result appears here…" readonly></textarea>
+            <button class="copy-btn" onclick="copyResult()">📋 Copy</button>
+        </div>
+        <div class="error" id="error"></div>
+        <div class="actions">
+            <button class="btn btn-primary" onclick="clearAll()">Clear</button>
+            <button class="btn" onclick="swapIO()">Swap ↕</button>
+        </div>
+        <p class="shamal">Shalom</p>
+    </div>
+    <script>
+        const input = document.getElementById('input');
+        const output = document.getElementById('output');
+        const error = document.getElementById('error');
+        let mode = 'encode';
+
+        document.querySelectorAll('.mode-tab').forEach(tab => {
+            tab.addEventListener('click', function () {
+                document.querySelectorAll('.mode-tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                mode = this.dataset.mode;
+                update();
+            });
+        });
+
+        function update() {
+            error.textContent = '';
+            const text = input.value;
+            if (!text) { output.value = ''; return }
+            try {
+                if (mode === 'encode') {
+                    output.value = btoa(unescape(encodeURIComponent(text)));
+                } else {
+                    output.value = decodeURIComponent(escape(atob(text)));
+                }
+            } catch (e) {
+                error.textContent = 'Error: Invalid ' + (mode === 'encode' ? 'input' : 'Base64') + ' string';
+                output.value = '';
+            }
+        }
+
+        function copyResult() {
+            navigator.clipboard.writeText(output.value).then(() => {
+                const btn = document.querySelector('.copy-btn');
+                btn.textContent = '✓ Copied!';
+                setTimeout(() => btn.textContent = '📋 Copy', 1500);
+            });
+        }
+
+        function clearAll() { input.value = ''; output.value = ''; error.textContent = ''; input.focus() }
+        function swapIO() { const t = input.value; input.value = output.value; output.value = ''; update() }
+
+        input.addEventListener('input', update);
+        update();
+    </script>
+</body>
+
+</html>

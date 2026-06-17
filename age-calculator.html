@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Calculate your exact age in years, months, days, hours, and minutes.">
+<title>Age Calculator · Acosystem</title>
+<style>
+
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:radial-gradient(ellipse at top,#1a2332,#020617 55%);color:#e5e7eb;min-height:100vh;padding:24px 16px 40px}
+.container{max-width:800px;margin:0 auto}
+h1{font-size:24px;margin-bottom:20px;background:linear-gradient(135deg,#fff,#93c5fd);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.back-link{display:inline-block;margin-bottom:16px;color:#9ca3af;text-decoration:none;font-size:13px}
+.back-link:hover{color:#3b82f6}
+input[type=date]::-webkit-calendar-picker-indicator{filter:invert(.7)}
+.btn{padding:10px 20px;border-radius:10px;border:1px solid rgba(55,65,81,.9);background:rgba(15,23,42,.95);color:#e5e7eb;cursor:pointer;font-size:13px;font-weight:600;transition:all .2s}
+.btn:hover{border-color:#3b82f6;box-shadow:0 4px 14px rgba(59,130,246,.28)}
+.btn-primary{background:#3b82f6;border-color:#3b82f6;color:#fff}
+.btn-primary:hover{background:#2563eb}
+.shamal{font-size:11px;color:rgba(148,163,184,.35);text-align:center;margin-top:30px;letter-spacing:.14em;text-transform:uppercase}
+
+</style>
+</head>
+<body>
+<div class="container">
+<a href="./index.html" class="back-link">← Back to Launcher</a>
+<h1>🎂 Age Calculator</h1>
+<p style="color:#9ca3af;margin-bottom:16px;font-size:14px;">Calculate your exact age in years, months, days, hours, and minutes.</p>
+<div style="background:rgba(17,24,39,.9);border:1px solid #1f2937;border-radius:14px;padding:20px;max-width:400px;margin:0 auto"><label style="color:#9ca3af;font-size:13px;font-weight:600">Date of Birth</label><input type="date" id="ageDOB" value="1990-01-01" style="width:100%;padding:12px;border-radius:8px;background:rgba(0,0,0,.3);border:1px solid #1f2937;color:#e5e7eb;font-size:16px;outline:none;margin-top:4px;margin-bottom:16px;color-scheme:dark"><label style="color:#9ca3af;font-size:13px;font-weight:600">On Date</label><input type="date" id="ageOn" style="width:100%;padding:12px;border-radius:8px;background:rgba(0,0,0,.3);border:1px solid #1f2937;color:#e5e7eb;font-size:16px;outline:none;margin-top:4px;color-scheme:dark"></div><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:16px"><div style="background:rgba(17,24,39,.9);border:1px solid #1f2937;border-radius:14px;padding:16px;text-align:center"><div style="font-size:32px;font-weight:800;color:#3b82f6" id="ageY">0</div><div style="font-size:11px;color:#9ca3af">Years</div></div><div style="background:rgba(17,24,39,.9);border:1px solid #1f2937;border-radius:14px;padding:16px;text-align:center"><div style="font-size:32px;font-weight:800;color:#3b82f6" id="ageM">0</div><div style="font-size:11px;color:#9ca3af">Months</div></div><div style="background:rgba(17,24,39,.9);border:1px solid #1f2937;border-radius:14px;padding:16px;text-align:center"><div style="font-size:32px;font-weight:800;color:#3b82f6" id="ageD">0</div><div style="font-size:11px;color:#9ca3af">Days</div></div></div>
+<p class="shamal">Shalom</p>
+</div>
+<script>
+const d=document.getElementById('ageDOB'),o=document.getElementById('ageOn');o.value=new Date().toISOString().split('T')[0];function calcAge(){const b=d.value?new Date(d.value+'T00:00:00'):null,n=o.value?new Date(o.value+'T00:00:00'):new Date();if(!b||!n||b>n)return;const diff=n-b;document.getElementById('ageY').textContent=Math.floor(diff/31557600000);document.getElementById('ageM').textContent=Math.floor(diff/2629800000);document.getElementById('ageD').textContent=Math.floor(diff/86400000)}d.addEventListener('change',calcAge);o.addEventListener('change',calcAge);calcAge();
+</script>
+</body>
+</html>
